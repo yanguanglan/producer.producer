@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Producer\\Producer\\": "src/"
+            "Producer\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Producer\\Producer\\": "tests/"
+            "Producer\\": "tests/"
         }
     }
 }
