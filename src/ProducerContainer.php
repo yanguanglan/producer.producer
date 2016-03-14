@@ -8,10 +8,34 @@ class ProducerContainer
     protected $config;
     protected $fsio;
 
-    public function __construct(array $config, Fsio $fsio)
-    {
+    public function __construct(
+        array $config,
+        Stdlog $logger,
+        Fsio $fsio
+    ) {
         $this->config = $config;
+        $this->logger = $logger;
         $this->fsio = $fsio;
+    }
+
+    public function newCommand(array $argv)
+    {
+        array_shift($argv);
+        $name = array_shift($argv);
+
+        $class = "Producer\Command\\" . ucfirst($name);
+        if (! class_exists($class)) {
+            throw new Exception("Command '$name' not found.");
+        }
+
+        $vcs = $this->newVcs();
+        $api = $this->newApi($vcs);
+        return new $class(
+            $this->logger,
+            $this->fsio,
+            $vcs,
+            $api
+        );
     }
 
     public function newVcs()

@@ -14,14 +14,14 @@ class Github implements ApiInterface
 
     protected function setRepo($origin)
     {
-        $repo = $this->getRepo($origin);
+        $repo = $this->getRepoOrigin($origin);
         if (substr($repo, -4) == '.git') {
             $repo = substr($repo, 0, -4);
         }
         $this->repo = $repo;
     }
 
-    protected function getRepo($origin)
+    protected function getRepoOrigin($origin)
     {
         $ssh = 'git@github.com:';
         $len = strlen($ssh);
@@ -31,6 +31,11 @@ class Github implements ApiInterface
 
         // presume https://
         return parse_url($origin, PHP_URL_PATH);
+    }
+
+    public function getRepo()
+    {
+        return $this->repo;
     }
 
     protected function api($method, $path, $body = null, $one = false)
