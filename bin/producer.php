@@ -12,5 +12,11 @@ $container = new ProducerContainer(
     new Fsio(getcwd())
 );
 
-$command = $container->newCommand($argv);
-$command();
+try {
+    $command = $container->newCommand($argv);
+    $exit = (int) $command();
+    exit($exit);
+} catch (\Exception $e) {
+    echo $e->getMessage() . PHP_EOL;
+    exit(1);
+}
