@@ -23,6 +23,10 @@ class Issues
     public function __invoke()
     {
         $issues = $this->api->fetchIssues();
+        if (empty($issues)) {
+            return;
+        }
+
         $this->logger->info($this->api->getRepo());
         foreach ($issues as $issue) {
             $this->logger->info("    {$issue->number}. {$issue->title}");
