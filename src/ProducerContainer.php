@@ -51,6 +51,7 @@ class ProducerContainer
     public function newApi(VcsInterface $vcs)
     {
         $origin = $vcs->getOrigin();
+
         if (strpos($origin, 'github.com') !== false) {
             return new Api\Github(
                 $this->config['PRODUCER_GITHUB_USER'],
@@ -59,6 +60,13 @@ class ProducerContainer
             );
         }
 
-        throw new Exception("Producer only works with github for now.");
+        if (strpos($origin, 'gitlab.com') !== false) {
+            return new Api\Gitlab(
+                $this->config['PRODUCER_GITLAB_TOKEN'],
+                $origin
+            );
+        }
+
+        throw new Exception("Producer will not work with {$origin}.");
     }
 }

@@ -1,14 +1,15 @@
 <?php
 namespace Producer\Api;
 
-class Github implements ApiInterface
+class Gitlab implements ApiInterface
 {
     protected $apiurl;
     protected $repo;
 
-    public function __construct($user, $token, $origin)
+    public function __construct($token, $origin)
     {
-        $this->apiurl = "https://{$user}:{$token}@api.github.com";
+        $this->apiurl = "https://gitlab.com/api/v3";
+        $this->token = $token;
         $this->setRepo($origin);
     }
 
@@ -23,7 +24,7 @@ class Github implements ApiInterface
 
     protected function getRepoOrigin($origin)
     {
-        $ssh = 'git@github.com:';
+        $ssh = 'git@gitlab.com:';
         $len = strlen($ssh);
         if (substr($origin, 0, $len) == $ssh) {
             return substr($origin, $len);
@@ -45,6 +46,7 @@ class Github implements ApiInterface
         } else {
             $path .= '&';
         }
+        $path .= "private_token={$this->token}&";
 
         $page = 1;
         $list = array();
@@ -89,13 +91,15 @@ class Github implements ApiInterface
 
     public function fetchIssues()
     {
-        $list = $this->api('GET', "/repos/{$this->repo}/issues?sort=created&direction=asc");
+        $repo = urlencode($this->repo);
+        $list = $this->api('GET', "/projects/{$repo}/issues?sort=asc");
         $issues = [];
+        $url = "https://gitlab.com/{$this->repo}/issues/";
         foreach ($list as $issue) {
             $issues[] = (object) [
+                'number' => $issue->iid,
                 'title' => $issue->title,
-                'number' => $issue->number,
-                'url' => $issue->html_url,
+                'url' => $url . $issue->iid,
             ];
         }
         return $issues;
