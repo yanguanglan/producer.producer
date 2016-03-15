@@ -6,7 +6,7 @@ class Github implements ApiInterface
     protected $apiurl;
     protected $repo;
 
-    public function __construct($user, $token, $origin)
+    public function __construct($origin, $user, $token)
     {
         $this->apiurl = "https://{$user}:{$token}@api.github.com";
         $this->setRepo($origin);

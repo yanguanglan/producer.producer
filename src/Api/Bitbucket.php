@@ -1,36 +1,28 @@
 <?php
 namespace Producer\Api;
 
-class Gitlab implements ApiInterface
+class Bitbucket implements ApiInterface
 {
     protected $apiurl;
     protected $repo;
 
-    public function __construct($origin, $token)
+    public function __construct($origin, $user, $pass)
     {
-        $this->apiurl = "https://gitlab.com/api/v3";
-        $this->token = $token;
+        $this->apiurl = "https://{$user}:{$pass}@api.bitbucket.org/2.0";
         $this->setRepo($origin);
     }
 
     protected function setRepo($origin)
     {
         $repo = $this->getRepoOrigin($origin);
-        if (substr($repo, -4) == '.git') {
-            $repo = substr($repo, 0, -4);
+        if (substr($repo, -4) == '.hg') {
+            $repo = substr($repo, 0, -3);
         }
         $this->repo = trim($repo, '/');
     }
 
     protected function getRepoOrigin($origin)
     {
-        $ssh = 'git@gitlab.com:';
-        $len = strlen($ssh);
-        if (substr($origin, 0, $len) == $ssh) {
-            return substr($origin, $len);
-        }
-
-        // presume https://
         return parse_url($origin, PHP_URL_PATH);
     }
 
@@ -46,7 +38,6 @@ class Gitlab implements ApiInterface
         } else {
             $path .= '&';
         }
-        $path .= "private_token={$this->token}&";
 
         $page = 1;
         $list = array();
@@ -54,6 +45,7 @@ class Gitlab implements ApiInterface
         do {
 
             $url = $this->apiurl . $path . "page={$page}";
+
             $context = stream_context_create([
                 'http' => [
                     'method' => $method,
@@ -71,12 +63,12 @@ class Gitlab implements ApiInterface
             // for POST etc, do not try additional pages
             $one_page_only = strtolower($method) !== 'get' || $one == true;
             if ($one_page_only) {
-                return $json;
+                return $json->values;
             }
 
             // add results to the list
-            if ($json) {
-                foreach ($json as $item) {
+            if (! empty($json->values)) {
+                foreach ($json->values as $item) {
                     $list[] = $item;
                 }
             }
@@ -84,22 +76,20 @@ class Gitlab implements ApiInterface
             // next page!
             $page ++;
 
-        } while ($json);
+        } while (! empty($json->values));
 
         return $list;
     }
 
     public function fetchIssues()
     {
-        $repo = urlencode($this->repo);
-        $list = $this->api('GET', "/projects/{$repo}/issues?sort=asc");
+        $list = $this->api('GET', "/repositories/{$this->repo}/issues?sort=created_on");
         $issues = [];
-        $url = "https://gitlab.com/{$this->repo}/issues/";
         foreach ($list as $issue) {
             $issues[] = (object) [
-                'number' => $issue->iid,
                 'title' => $issue->title,
-                'url' => $url . $issue->iid,
+                'number' => $issue->id,
+                'url' => "https://bitbucket.org/{$this->repo}/issues/{$issue->id}",
             ];
         }
         return $issues;

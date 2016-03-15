@@ -12,7 +12,7 @@ class Git implements VcsInterface
     public function __construct(Fsio $fsio)
     {
         $this->fsio = $fsio;
-        $this->config = parse_ini_string($this->fsio->get('config'), true);
+        $this->config = $this->fsio->parseIni('.git/config', true);
     }
 
     public function getOrigin()

@@ -40,12 +40,15 @@ class ProducerContainer
 
     public function newVcs()
     {
-        if ($this->fsio->isDir(".git")) {
-            $dir = $this->fsio->path(".git");
-            return new Vcs\Git(new Fsio($dir));
+        if ($this->fsio->isDir('.git')) {
+            return new Vcs\Git($this->fsio);
         };
 
-        throw new Exception("Producer only works with git for now.");
+        if ($this->fsio->isDir('.hg')) {
+            return new Vcs\Hg($this->fsio);
+        }
+
+        throw new Exception("Could not find .git or .hg files.");
     }
 
     public function newApi(VcsInterface $vcs)
@@ -54,16 +57,24 @@ class ProducerContainer
 
         if (strpos($origin, 'github.com') !== false) {
             return new Api\Github(
+                $origin,
                 $this->config['PRODUCER_GITHUB_USER'],
-                $this->config['PRODUCER_GITHUB_TOKEN'],
-                $origin
+                $this->config['PRODUCER_GITHUB_TOKEN']
             );
         }
 
         if (strpos($origin, 'gitlab.com') !== false) {
             return new Api\Gitlab(
-                $this->config['PRODUCER_GITLAB_TOKEN'],
-                $origin
+                $origin,
+                $this->config['PRODUCER_GITLAB_TOKEN']
+            );
+        }
+
+        if (strpos($origin, 'bitbucket.org') !== false) {
+            return new Api\Bitbucket(
+                $origin,
+                $this->config['PRODUCER_BITBUCKET_USERNAME'],
+                $this->config['PRODUCER_BITBUCKET_PASSWORD']
             );
         }
 

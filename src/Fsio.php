@@ -52,6 +52,21 @@ class Fsio
         throw new Exception($error['message']);
     }
 
+    public function parseIni($file, $sections = false, $mode = INI_SCANNER_NORMAL)
+    {
+        $file = $this->path($file);
+
+        $level = error_reporting(0);
+        $result = parse_ini_file($file, $sections, $mode);
+        error_reporting($level);
+
+        if ($result !== false) {
+            return $result;
+        }
+
+        $error = error_get_last();
+        throw new Exception($error['message']);
+    }
     public function isFile($file)
     {
         $file = $this->path($file);
