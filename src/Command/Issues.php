@@ -28,9 +28,11 @@ class Issues
         }
 
         $this->logger->info($this->api->getRepo());
+        $this->logger->info('');
         foreach ($issues as $issue) {
             $this->logger->info("    {$issue->number}. {$issue->title}");
             $this->logger->info("        {$issue->url}");
+            $this->logger->info('');
         }
     }
 }
