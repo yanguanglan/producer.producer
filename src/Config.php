@@ -8,6 +8,11 @@ class Config
 
     public function __construct(Fsio $fsio)
     {
+        if (! $fsio->isFile($this->file)) {
+            $path = $fsio->path($this->file);
+            throw new Exception("Config file {$path} not found.");
+        }
+
         $this->data = $fsio->parseIni($this->file);
     }
 

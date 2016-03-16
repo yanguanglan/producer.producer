@@ -67,6 +67,7 @@ class Fsio
         $error = error_get_last();
         throw new Exception($error['message']);
     }
+
     public function isFile($file)
     {
         $file = $this->path($file);
