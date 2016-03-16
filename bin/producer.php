@@ -4,7 +4,7 @@ namespace Producer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-$config = parse_ini_file($_SERVER['HOME'] . '/.producer');
+$config = parse_ini_file($_SERVER['HOME'] . '/.producer/config');
 
 $container = new ProducerContainer(
     $config,

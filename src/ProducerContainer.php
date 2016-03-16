@@ -54,30 +54,41 @@ class ProducerContainer
     public function newApi(VcsInterface $vcs)
     {
         $origin = $vcs->getOrigin();
-
-        if (strpos($origin, 'github.com') !== false) {
-            return new Api\Github(
-                $origin,
-                $this->config['PRODUCER_GITHUB_USER'],
-                $this->config['PRODUCER_GITHUB_TOKEN']
-            );
+        switch (true) {
+            case (strpos($origin, 'github.com') !== false):
+                return $this->newApiGithub($vcs, $origin);
+            case (strpos($origin, 'gitlab.com') !== false):
+                return $this->newApiGitlab($vcs, $origin);
+            case (strpos($origin, 'bitbucket.org') !== false):
+                return $this->newApiBitbucket($vcs, $origin);
+            default:
+                throw new Exception("Producer will not work with {$origin}.");
         }
+    }
 
-        if (strpos($origin, 'gitlab.com') !== false) {
-            return new Api\Gitlab(
-                $origin,
-                $this->config['PRODUCER_GITLAB_TOKEN']
-            );
-        }
+    protected function newApiGithub(VcsInterface $vcs, $origin)
+    {
+        return new Api\Github(
+            $origin,
+            $this->config['github_username'],
+            $this->config['github_token']
+        );
+    }
 
-        if (strpos($origin, 'bitbucket.org') !== false) {
-            return new Api\Bitbucket(
-                $origin,
-                $this->config['PRODUCER_BITBUCKET_USERNAME'],
-                $this->config['PRODUCER_BITBUCKET_PASSWORD']
-            );
-        }
+    protected function newApiGitlab(VcsInterface $vcs, $origin)
+    {
+        return new Api\Gitlab(
+            $origin,
+            $this->config['gitlab_token']
+        );
+    }
 
-        throw new Exception("Producer will not work with {$origin}.");
+    protected function newApiBitbucket(VcsInterface $vcs, $origin)
+    {
+        return new Api\Bitbucket(
+            $origin,
+            $this->config['bitbucket_username'],
+            $this->config['bitbucket_password']
+        );
     }
 }
