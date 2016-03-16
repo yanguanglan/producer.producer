@@ -1,19 +1,9 @@
 <?php
 namespace Producer\Vcs;
 
-use Producer\Exception;
-use Producer\Fsio;
-
-class Hg implements VcsInterface
+class Hg extends AbstractVcs
 {
-    protected $config = [];
-    protected $origin;
-
-    public function __construct(Fsio $fsio)
-    {
-        $this->fsio = $fsio;
-        $this->config = $this->fsio->parseIni('.hg/hgrc', true);
-    }
+    protected $configFile = '.hg/hgrc';
 
     public function getOrigin()
     {

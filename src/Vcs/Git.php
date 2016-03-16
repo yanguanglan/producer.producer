@@ -2,24 +2,33 @@
 namespace Producer\Vcs;
 
 use Producer\Exception;
-use Producer\Fsio;
 
-class Git implements VcsInterface
+class Git extends AbstractVcs
 {
-    protected $config = [];
-    protected $origin;
-
-    public function __construct(Fsio $fsio)
-    {
-        $this->fsio = $fsio;
-        $this->config = $this->fsio->parseIni('.git/config', true);
-    }
+    protected $configFile = '.git/config';
 
     public function getOrigin()
     {
-        if (! isset($this->config['remote origin']['url'])) {
+        if (! isset($this->configData['remote origin']['url'])) {
             throw new Exception('Could not determine remote origin.');
         }
-        return $this->config['remote origin']['url'];
+        return $this->configData['remote origin']['url'];
+    }
+
+    public function getBranch()
+    {
+        $branch = $this->shell('git rev-parse --abbrev-ref HEAD', $output, $return);
+        if ($return) {
+            throw new Exception(implode(PHP_EOL, $output), $return);
+        }
+        return trim($branch);
+    }
+
+    public function updateBranch()
+    {
+        $last = $this->shell('git pull', $output, $return);
+        if ($return) {
+            throw new Exception($last, $return);
+        }
     }
 }

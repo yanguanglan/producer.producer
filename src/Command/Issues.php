@@ -1,29 +1,23 @@
 <?php
 namespace Producer\Command;
 
-use Producer\Config;
-use Producer\Stdlog;
-use Producer\Fsio;
-use Producer\Vcs\VcsInterface;
 use Producer\Api\ApiInterface;
+use Psr\Log\LoggerInterface;
+use Producer\Vcs\VcsInterface;
 
 class Issues
 {
     public function __construct(
-        Config $config,
-        Stdlog $logger,
-        Fsio $fsio,
+        LoggerInterface $logger,
         VcsInterface $vcs,
         ApiInterface $api
     ) {
-        $this->config = $config;
         $this->logger = $logger;
-        $this->fsio = $fsio;
         $this->vcs = $vcs;
         $this->api = $api;
     }
 
-    public function __invoke()
+    public function __invoke(array $argv)
     {
         $issues = $this->api->fetchIssues();
         if (empty($issues)) {

@@ -18,15 +18,11 @@ class ProducerContainer
     ) {
         $this->homedir = $homedir;
         $this->workdir = $workdir;
-        $this->stdout = $stdout;
-        $this->stderr = $stderr;
+        $this->logger = new Stdlog($stdout, $stderr);
     }
 
-    public function newCommand(array $argv)
+    public function newCommand($name)
     {
-        array_shift($argv);
-        $name = array_shift($argv);
-
         $class = "Producer\Command\\" . ucfirst($name);
         if (! class_exists($class)) {
             throw new Exception("Command '$name' not found.");
@@ -34,12 +30,11 @@ class ProducerContainer
 
         $homefs = $this->newFsio($this->homedir);
         $config = $this->newConfig($homefs);
-        $logger = $this->newLogger();
         $workfs = $this->newFsio($this->workdir);
         $vcs = $this->newVcs($workfs);
         $api = $this->newApi($vcs->getOrigin(), $config);
 
-        return new $class($config, $logger, $workfs, $vcs, $api);
+        return new $class($this->logger, $vcs, $api);
     }
 
     protected function newFsio($dir)
@@ -52,19 +47,14 @@ class ProducerContainer
         return new Config($fsio);
     }
 
-    protected function newLogger()
-    {
-        return new Stdlog($this->stdout, $this->stderr);
-    }
-
     public function newVcs($fsio)
     {
         if ($fsio->isDir('.git')) {
-            return new Vcs\Git($fsio);
+            return new Vcs\Git($fsio, $this->logger);
         };
 
         if ($fsio->isDir('.hg')) {
-            return new Vcs\Hg($fsio);
+            return new Vcs\Hg($fsio, $this->logger);
         }
 
         throw new Exception("Could not find .git or .hg files.");

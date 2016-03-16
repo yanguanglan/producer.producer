@@ -12,8 +12,10 @@ $container = new ProducerContainer(
 );
 
 try {
-    $command = $container->newCommand($argv);
-    $exit = (int) $command();
+    array_shift($argv);
+    $name = array_shift($argv);
+    $command = $container->newCommand($name);
+    $exit = (int) $command($argv);
     exit($exit);
 } catch (\Exception $e) {
     echo $e->getMessage() . PHP_EOL;
