@@ -1,6 +1,11 @@
 <?php
 namespace Producer\Vcs;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Hg extends AbstractVcs
 {
     protected $configFile = '.hg/hgrc';

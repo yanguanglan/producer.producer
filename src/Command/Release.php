@@ -6,6 +6,11 @@ use Producer\Exception;
 use Producer\Vcs\VcsInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Release
 {
     protected $composer;
@@ -26,6 +31,18 @@ class Release
         $this->api = $api;
     }
 
+    protected function shell($cmd, &$output = null, &$return = null)
+    {
+        $cmd = str_replace('; ', ';\\' . PHP_EOL, $cmd);
+        $this->logger->debug("> $cmd");
+        $output = null;
+        $result = exec($cmd, $output, $return);
+        foreach ($output as $line) {
+            $this->logger->debug("< $line");
+        }
+        return $result;
+    }
+
     public function __invoke(array $argv)
     {
         $this->setComposerPackage();
@@ -37,6 +54,8 @@ class Release
 
         $this->vcs->checkSupportFiles();
         $this->vcs->checkLicenseYear();
+        $this->runTests();
+        $this->validateDocblocks();
 
         $this->logger->info('Done!');
     }
@@ -78,5 +97,72 @@ class Release
         $this->logger->info("Determining working branch.");
         $this->branch = $this->vcs->getBranch();
         $this->logger->info("Working branch is '{$this->branch}'.");
+    }
+
+    protected function runTests()
+    {
+        $this->logger->info('Update composer and run tests.');
+        $this->shell('composer update');
+        $line = $this->shell('phpunit', $output, $return);
+        if ($return) {
+            throw new Exception($line);
+        }
+    }
+
+    protected function validateDocblocks()
+    {
+        $this->logger->info('Validate docblocks.');
+
+        $target = "/tmp/phpdoc/{$this->package}";
+
+        // remove previous validation records
+        $this->shell("rm -rf {$target}");
+
+        // validate
+        $cmd = "phpdoc -d src/ -t {$target} --force --verbose --template=xml";
+        $line = $this->shell($cmd, $output, $return);
+
+        // remove phpdoc log files
+        $this->shell('rm -f phpdoc-*.log');
+
+        // get the XML file and look for errors
+        $xml = simplexml_load_file("{$target}/structure.xml");
+
+        // are there missing @package tags?
+        $missing = false;
+        foreach ($xml->file as $file) {
+
+            // get the expected package name
+            $class = $file->class->full_name . $file->interface->full_name;
+
+            // class-level tag (don't care about file-level)
+            $package = $file->class['package'] . $file->interface['package'];
+            if ($package && $package != $this->composer->name) {
+                $missing = true;
+                $message = "  Expected class-level @package {$this->composer->name}, "
+                    . "actual @package {$package}, "
+                    . "in class {$class}";
+                $this->logger->error($message);
+            }
+        }
+
+        if ($missing) {
+            throw new Exception('Docblocks not valid.');
+        }
+
+        // are there other invalidities?
+        foreach ($output as $line) {
+            // this line indicates the end of parsing
+            if (substr($line, 0, 41) == 'Transform analyzed project into artifacts') {
+                break;
+            }
+            // invalid lines have 2-space indents
+            if (substr($line, 0, 2) == '  ') {
+                throw new Exception('Docblocks not valid.');
+            }
+        }
+
+        // guess they're valid
+        $this->logger->info('Docblocks appear valid.');
     }
 }

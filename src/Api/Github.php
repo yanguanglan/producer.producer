@@ -1,6 +1,11 @@
 <?php
 namespace Producer\Api;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Github implements ApiInterface
 {
     protected $apiurl;

@@ -1,6 +1,11 @@
 <?php
 namespace Producer\Vcs;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 interface VcsInterface
 {
     public function getOrigin();

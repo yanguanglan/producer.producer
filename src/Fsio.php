@@ -3,6 +3,11 @@ namespace Producer;
 
 use Producer\Exception;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Fsio
 {
     protected $root;

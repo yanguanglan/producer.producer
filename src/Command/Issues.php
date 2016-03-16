@@ -5,6 +5,11 @@ use Producer\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
 use Producer\Vcs\VcsInterface;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Issues
 {
     public function __construct(

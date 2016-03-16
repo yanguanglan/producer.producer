@@ -1,6 +1,11 @@
 <?php
 namespace Producer\Api;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Bitbucket implements ApiInterface
 {
     protected $apiurl;

@@ -5,6 +5,11 @@ use Producer\Exception;
 use Producer\Fsio;
 use Psr\Log\LoggerInterface;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 abstract class AbstractVcs implements VcsInterface
 {
     protected $configFile = '';

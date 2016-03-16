@@ -3,6 +3,11 @@ namespace Producer\Vcs;
 
 use Producer\Exception;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Git extends AbstractVcs
 {
     protected $configFile = '.git/config';

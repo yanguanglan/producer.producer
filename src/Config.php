@@ -1,6 +1,11 @@
 <?php
 namespace Producer;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Config
 {
     protected $data = [];

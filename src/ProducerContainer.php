@@ -3,6 +3,11 @@ namespace Producer;
 
 use Producer\Vcs\VcsInterface;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class ProducerContainer
 {
     protected $homedir;

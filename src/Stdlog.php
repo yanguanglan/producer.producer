@@ -8,6 +8,8 @@ use Psr\Log\LogLevel;
  *
  * A basic logger implementation that writes to standard output and error.
  *
+ * @package producer/producer
+ *
  */
 class Stdlog implements LoggerInterface
 {
