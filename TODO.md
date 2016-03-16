@@ -6,7 +6,7 @@
 
 ## New Commands
 
-Cf. existing aura bin commands.
+Cf. existing aura bin commands at <https://github.com/auraphp/bin/tree/master/src/Command>.
 
 ```
 producer docs
