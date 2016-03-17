@@ -37,7 +37,7 @@ class Git extends AbstractVcs
         }
     }
 
-    public function getChangelogTimestamp()
+    public function getChangelogDate()
     {
         $file = $this->fsio->isFile('CHANGELOG', 'CHANGELOG.md');
         if (! $file) {
@@ -45,31 +45,29 @@ class Git extends AbstractVcs
         }
 
         $this->shell("git log -1 {$file}", $output, $return);
-        return $this->findTimestamp($output);
+        return $this->findDate($output);
     }
 
-    public function getLastCommitTimestamp()
+    public function getLastCommitDate()
     {
         $this->shell("git log -1", $output, $return);
-        return $this->findTimestamp($output);
+        return $this->findDate($output);
     }
 
-    protected function findTimestamp($lines)
+    protected function findDate($lines)
     {
         foreach ($lines as $line) {
             if (substr($line, 0, 5) == 'Date:') {
-                $date = trim(substr($line, 5));
-                return strtotime($date);
+                return trim(substr($line, 5));
             }
         }
 
         throw new Exception("No 'Date:' line found.");
     }
 
-    public function logSinceTimestamp($date)
+    public function logSinceDate($date)
     {
-        $since = date('D M j H:i:s Y', $lastCommit);
-        $this->shell("git log --name-only --since='$since' --reverse", $output);
+        $this->shell("git log --name-only --since='$date' --reverse", $output);
         return $output;
     }
 }

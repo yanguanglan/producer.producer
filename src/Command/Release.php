@@ -171,16 +171,20 @@ class Release
 
     protected function checkChangelog()
     {
-        $this->logger->info('Checking the CHANGELOG.');
+        $this->logger->info('Checking if CHANGELOG up to date.');
 
-        $lastChangelog = $this->vcs->getChangelogTimestamp();
-        $lastCommit = $this->vcs->getLastCommitTimestamp();
-        if ($lastChangelog <= $lastCommit) {
+        $lastChangelog = $this->vcs->getChangelogDate();
+        $this->logger->info("CHANGELOG date is $lastChangelog.");
+
+        $lastCommit = $this->vcs->getLastCommitDate();
+        $this->logger->info("Last commit date is $lastCommit.");
+
+        if ($lastChangelog == $lastCommit) {
             $this->logger->info('CHANGELOG appears up to date.');
             return;
         }
 
-        $this->logSinceTimestamp($lastCommit);
-        throw new Exception('CHANGELOG does not appear up to date.');
+        $this->vcs->logSinceDate($lastChangelog);
+        throw new Exception('CHANGELOG appears out of date.');
     }
 }
