@@ -73,10 +73,16 @@ class Fsio
         throw new Exception($error['message']);
     }
 
-    public function isFile($file)
+    // is one of these a file?
+    public function isFile(...$files)
     {
-        $file = $this->path($file);
-        return file_exists($file) && is_readable($file);
+        foreach ($files as $file) {
+            $path = $this->path($file);
+            if (file_exists($path) && is_readable($path)) {
+                return $file;
+            }
+        }
+        return '';
     }
 
     public function isDir($dir)

@@ -44,26 +44,33 @@ abstract class AbstractVcs implements VcsInterface
     public function checkSupportFiles()
     {
         $files = [
-            '.scrutinizer.yml',
-            '.travis.yml',
             'CHANGELOG',
             'CONTRIBUTING',
             'LICENSE',
-            'phpunit.bootstrap.php',
-            'phpunit.xml.dist',
             'README',
         ];
+        foreach ($files as $file) {
+            $found = $this->fsio->isFile($file, "{$file}.md");
+            if (! $found) {
+                throw new Exception("{$file} file is missing.");
+            }
+        }
 
+        $files = [
+            'phpunit.xml.dist',
+            'tests/bootstrap.php',
+        ];
         foreach ($files as $file) {
             if (! $this->fsio->isFile($file)) {
-                throw new Exception("Support file '{$file}' not found.");
+                throw new Exception("{$file} file is missing.");
             }
         }
     }
 
     public function checkLicenseYear()
     {
-        $license = $this->fsio->get('LICENSE');
+        $file = $this->fsio->isFile('LICENSE', 'LICENSE.md');
+        $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {
             throw new Exception('The LICENSE copyright year looks out-of-date.');

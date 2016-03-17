@@ -15,12 +15,14 @@ producer docs
 producer versions
     lists existing release versions
 
-producer log-since {$version}
+producer log-since <$version>
 
-producer release
+producer release [ <$branch> ]
+    switches to $branch if specified
     checks that a release would be valid
 
-producer release {$version}
+producer release <$branch> <$version>
+    switches to $branch
     checks against previous major/minor/bugfix progression
     checks that a release would be valid
     actually does the release (bitbucket is just a tag)
