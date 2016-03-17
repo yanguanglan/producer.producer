@@ -1,12 +1,12 @@
 <?php
-namespace Producer\Vcs;
+namespace Producer\Repo;
 
 /**
  *
  * @package producer/producer
  *
  */
-interface VcsInterface
+interface RepoInterface
 {
     public function getOrigin();
     public function getBranch();

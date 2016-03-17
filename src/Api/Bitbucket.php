@@ -9,21 +9,21 @@ namespace Producer\Api;
 class Bitbucket implements ApiInterface
 {
     protected $apiurl;
-    protected $repo;
+    protected $repoName;
 
     public function __construct($origin, $user, $pass)
     {
         $this->apiurl = "https://{$user}:{$pass}@api.bitbucket.org/2.0";
-        $this->setRepo($origin);
+        $this->setRepoName($origin);
     }
 
-    protected function setRepo($origin)
+    protected function setRepoName($origin)
     {
-        $repo = $this->getRepoOrigin($origin);
-        if (substr($repo, -4) == '.hg') {
-            $repo = substr($repo, 0, -3);
+        $repoName = $this->getRepoOrigin($origin);
+        if (substr($repoName, -4) == '.hg') {
+            $repoName = substr($repoName, 0, -3);
         }
-        $this->repo = trim($repo, '/');
+        $this->repoName = trim($repoName, '/');
     }
 
     protected function getRepoOrigin($origin)
@@ -31,9 +31,9 @@ class Bitbucket implements ApiInterface
         return parse_url($origin, PHP_URL_PATH);
     }
 
-    public function getRepo()
+    public function getRepoName()
     {
-        return $this->repo;
+        return $this->repoName;
     }
 
     protected function api($method, $path, $body = null, $one = false)
@@ -88,13 +88,13 @@ class Bitbucket implements ApiInterface
 
     public function fetchIssues()
     {
-        $list = $this->api('GET', "/repositories/{$this->repo}/issues?sort=created_on");
+        $list = $this->api('GET', "/repositories/{$this->repoName}/issues?sort=created_on");
         $issues = [];
         foreach ($list as $issue) {
             $issues[] = (object) [
                 'title' => $issue->title,
                 'number' => $issue->id,
-                'url' => "https://bitbucket.org/{$this->repo}/issues/{$issue->id}",
+                'url' => "https://bitbucket.org/{$this->repoName}/issues/{$issue->id}",
             ];
         }
         return $issues;

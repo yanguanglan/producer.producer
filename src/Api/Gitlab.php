@@ -9,22 +9,22 @@ namespace Producer\Api;
 class Gitlab implements ApiInterface
 {
     protected $apiurl;
-    protected $repo;
+    protected $repoName;
 
     public function __construct($origin, $token)
     {
         $this->apiurl = "https://gitlab.com/api/v3";
         $this->token = $token;
-        $this->setRepo($origin);
+        $this->setRepoName($origin);
     }
 
-    protected function setRepo($origin)
+    protected function setRepoName($origin)
     {
-        $repo = $this->getRepoOrigin($origin);
-        if (substr($repo, -4) == '.git') {
-            $repo = substr($repo, 0, -4);
+        $repoName = $this->getRepoOrigin($origin);
+        if (substr($repoName, -4) == '.git') {
+            $repoName = substr($repoName, 0, -4);
         }
-        $this->repo = trim($repo, '/');
+        $this->repoName = trim($repoName, '/');
     }
 
     protected function getRepoOrigin($origin)
@@ -39,9 +39,9 @@ class Gitlab implements ApiInterface
         return parse_url($origin, PHP_URL_PATH);
     }
 
-    public function getRepo()
+    public function getRepoName()
     {
-        return $this->repo;
+        return $this->repoName;
     }
 
     protected function api($method, $path, $body = null, $one = false)
@@ -96,10 +96,10 @@ class Gitlab implements ApiInterface
 
     public function fetchIssues()
     {
-        $repo = urlencode($this->repo);
-        $list = $this->api('GET', "/projects/{$repo}/issues?sort=asc");
+        $repoName = urlencode($this->repoName);
+        $list = $this->api('GET', "/projects/{$repoName}/issues?sort=asc");
         $issues = [];
-        $url = "https://gitlab.com/{$this->repo}/issues/";
+        $url = "https://gitlab.com/{$this->repoName}/issues/";
         foreach ($list as $issue) {
             $issues[] = (object) [
                 'number' => $issue->iid,

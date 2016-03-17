@@ -1,7 +1,7 @@
 <?php
 namespace Producer;
 
-use Producer\Vcs\VcsInterface;
+use Producer\Repo\RepoInterface;
 
 /**
  *
@@ -36,10 +36,10 @@ class ProducerContainer
         $homefs = $this->newFsio($this->homedir);
         $config = $this->newConfig($homefs);
         $workfs = $this->newFsio($this->workdir);
-        $vcs = $this->newVcs($workfs);
-        $api = $this->newApi($vcs->getOrigin(), $config);
+        $repo = $this->newRepo($workfs);
+        $api = $this->newApi($repo->getOrigin(), $config);
 
-        return new $class($this->logger, $vcs, $api);
+        return new $class($this->logger, $repo, $api);
     }
 
     protected function newFsio($dir)
@@ -52,14 +52,14 @@ class ProducerContainer
         return new Config($fsio);
     }
 
-    public function newVcs($fsio)
+    public function newRepo($fsio)
     {
         if ($fsio->isDir('.git')) {
-            return new Vcs\Git($fsio, $this->logger);
+            return new Repo\Git($fsio, $this->logger);
         };
 
         if ($fsio->isDir('.hg')) {
-            return new Vcs\Hg($fsio, $this->logger);
+            return new Repo\Hg($fsio, $this->logger);
         }
 
         throw new Exception("Could not find .git or .hg files.");

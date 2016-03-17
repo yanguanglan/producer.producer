@@ -19,6 +19,16 @@ class Fsio
         $this->root = $root;
     }
 
+    public function getTmpDir($sub = '')
+    {
+        $dir = sys_get_temp_dir();
+        if ($sub) {
+            $sub = trim($sub, DIRECTORY_SEPARATOR);
+            $dir .= DIRECTORY_SEPARATOR . $sub;
+        }
+        return $dir;
+    }
+
     public function path($spec)
     {
         $spec = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $spec);

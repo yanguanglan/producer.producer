@@ -9,21 +9,21 @@ namespace Producer\Api;
 class Github implements ApiInterface
 {
     protected $apiurl;
-    protected $repo;
+    protected $repoName;
 
     public function __construct($origin, $user, $token)
     {
         $this->apiurl = "https://{$user}:{$token}@api.github.com";
-        $this->setRepo($origin);
+        $this->setRepoName($origin);
     }
 
-    protected function setRepo($origin)
+    protected function setRepoName($origin)
     {
-        $repo = $this->getRepoOrigin($origin);
-        if (substr($repo, -4) == '.git') {
-            $repo = substr($repo, 0, -4);
+        $repoName = $this->getRepoOrigin($origin);
+        if (substr($repoName, -4) == '.git') {
+            $repoName = substr($repoName, 0, -4);
         }
-        $this->repo = trim($repo, '/');
+        $this->repoName = trim($repoName, '/');
     }
 
     protected function getRepoOrigin($origin)
@@ -38,9 +38,9 @@ class Github implements ApiInterface
         return parse_url($origin, PHP_URL_PATH);
     }
 
-    public function getRepo()
+    public function getRepoName()
     {
-        return $this->repo;
+        return $this->repoName;
     }
 
     protected function api($method, $path, $body = null, $one = false)
@@ -94,7 +94,7 @@ class Github implements ApiInterface
 
     public function fetchIssues()
     {
-        $list = $this->api('GET', "/repos/{$this->repo}/issues?sort=created&direction=asc");
+        $list = $this->api('GET', "/repos/{$this->repoName}/issues?sort=created&direction=asc");
         $issues = [];
         foreach ($list as $issue) {
             $issues[] = (object) [

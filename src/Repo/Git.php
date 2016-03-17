@@ -1,5 +1,5 @@
 <?php
-namespace Producer\Vcs;
+namespace Producer\Repo;
 
 use Producer\Exception;
 
@@ -8,7 +8,7 @@ use Producer\Exception;
  * @package producer/producer
  *
  */
-class Git extends AbstractVcs
+class Git extends AbstractRepo
 {
     protected $configFile = '.git/config';
 

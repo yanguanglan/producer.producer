@@ -8,6 +8,6 @@ namespace Producer\Api;
  */
 interface ApiInterface
 {
-    public function getRepo();
+    public function getRepoName();
     public function fetchIssues();
 }

@@ -3,7 +3,7 @@ namespace Producer\Command;
 
 use Producer\Api\ApiInterface;
 use Psr\Log\LoggerInterface;
-use Producer\Vcs\VcsInterface;
+use Producer\Repo\RepoInterface;
 
 /**
  *
@@ -14,11 +14,11 @@ class Issues
 {
     public function __construct(
         LoggerInterface $logger,
-        VcsInterface $vcs,
+        RepoInterface $repo,
         ApiInterface $api
     ) {
         $this->logger = $logger;
-        $this->vcs = $vcs;
+        $this->repo = $repo;
         $this->api = $api;
     }
 
@@ -29,7 +29,7 @@ class Issues
             return;
         }
 
-        $this->logger->info($this->api->getRepo());
+        $this->logger->info($this->api->getRepoName());
         $this->logger->info('');
         foreach ($issues as $issue) {
             $this->logger->info("    {$issue->number}. {$issue->title}");

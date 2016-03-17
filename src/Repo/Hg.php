@@ -1,12 +1,12 @@
 <?php
-namespace Producer\Vcs;
+namespace Producer\Repo;
 
 /**
  *
  * @package producer/producer
  *
  */
-class Hg extends AbstractVcs
+class Hg extends AbstractRepo
 {
     protected $configFile = '.hg/hgrc';
 
