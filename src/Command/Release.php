@@ -57,6 +57,7 @@ class Release
         $this->runTests();
         $this->checkDocblocks();
         $this->checkChangelog();
+        $this->showIssues();
 
         $this->logger->info('Done!');
     }
@@ -112,8 +113,6 @@ class Release
 
     protected function checkDocblocks()
     {
-        return;
-
         $this->logger->info('Checking the docblocks.');
 
         $target = "/tmp/phpdoc/{$this->package}";
@@ -184,7 +183,22 @@ class Release
             return;
         }
 
+        $this->logger->error('CHANGELOG appears out of date.');
         $this->vcs->logSinceDate($lastChangelog);
-        throw new Exception('CHANGELOG appears out of date.');
+        throw new Exception('Please update and commit the CHANGELOG.');
+    }
+
+    protected function showIssues()
+    {
+        $issues = $this->api->fetchIssues();
+        if (empty($issues)) {
+            $this->logger->info('No open issues.');
+        }
+
+        $this->logger->warning('There are open issues:');
+        foreach ($issues as $issue) {
+            $this->logger->warning("    {$issue->number}. {$issue->title}");
+            $this->logger->warning("        {$issue->url}");
+        }
     }
 }
