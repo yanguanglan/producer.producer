@@ -10,7 +10,7 @@ interface RepoInterface
 {
     public function getOrigin();
     public function getBranch();
-    public function updateBranch();
+    public function pull();
     public function checkSupportFiles();
     public function checkLicenseYear();
 }

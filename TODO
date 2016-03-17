@@ -4,6 +4,10 @@
 
 - allow for repo-specific .producer file
 
+- for `release` version, against previous major/minor/bugfix version numbers
+
+- for `release`, send notifications
+
 ## New Commands
 
 Cf. existing aura bin commands at <https://github.com/auraphp/bin/tree/master/src/Command>.
@@ -22,9 +26,7 @@ producer release [ <$branch> ]
     checks that a release would be valid
 
 producer release <$branch> <$version>
-    switches to $branch
-    checks against previous major/minor/bugfix progression
+    switches to $branch, which must be specified
     checks that a release would be valid
     actually does the release (bitbucket is just a tag)
-    sends notifications
 ```

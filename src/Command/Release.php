@@ -34,10 +34,10 @@ class Release
     public function __invoke(array $argv)
     {
         $this->setComposerPackage();
+        $this->setBranch(array_shift($argv));
         $this->setVersion(array_shift($argv));
-        $this->setBranch();
 
-        $this->repo->updateBranch();
+        $this->repo->pull();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->runTests();
@@ -53,6 +53,15 @@ class Release
         $this->composer = $this->repo->getComposer();
         $this->package = $this->composer->name;
         $this->logger->info("Composer package '{$this->package}'.");
+    }
+
+    protected function setBranch($branch)
+    {
+        if ($branch) {
+            $this->repo->checkout($branch);
+        }
+        $this->branch = $this->repo->getBranch();
+        $this->logger->info("Working branch is '{$this->branch}'.");
     }
 
     protected function setVersion($version)
@@ -78,13 +87,6 @@ class Release
         $format = '^(\d+.\d+.\d+)(-(dev|alpha\d+|beta\d+|RC\d+))?$';
         preg_match("/$format/", $version, $matches);
         return (bool) $matches;
-    }
-
-    protected function setBranch()
-    {
-        $this->logger->info("Determining working branch.");
-        $this->branch = $this->repo->getBranch();
-        $this->logger->info("Working branch is '{$this->branch}'.");
     }
 
     protected function checkChangelog()
