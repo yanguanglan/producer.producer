@@ -36,4 +36,40 @@ class Git extends AbstractVcs
             throw new Exception($last, $return);
         }
     }
+
+    public function getChangelogTimestamp()
+    {
+        $file = $this->fsio->isFile('CHANGELOG', 'CHANGELOG.md');
+        if (! $file) {
+            throw new Exception("{$file} is missing.");
+        }
+
+        $this->shell("git log -1 {$file}", $output, $return);
+        return $this->findTimestamp($output);
+    }
+
+    public function getLastCommitTimestamp()
+    {
+        $this->shell("git log -1", $output, $return);
+        return $this->findTimestamp($output);
+    }
+
+    protected function findTimestamp($lines)
+    {
+        foreach ($lines as $line) {
+            if (substr($line, 0, 5) == 'Date:') {
+                $date = trim(substr($line, 5));
+                return strtotime($date);
+            }
+        }
+
+        throw new Exception("No 'Date:' line found.");
+    }
+
+    public function logSinceTimestamp($date)
+    {
+        $since = date('D M j H:i:s Y', $lastCommit);
+        $this->shell("git log --name-only --since='$since' --reverse", $output);
+        return $output;
+    }
 }

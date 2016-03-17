@@ -55,7 +55,8 @@ class Release
         $this->vcs->checkSupportFiles();
         $this->vcs->checkLicenseYear();
         $this->runTests();
-        $this->validateDocblocks();
+        $this->checkDocblocks();
+        $this->checkChangelog();
 
         $this->logger->info('Done!');
     }
@@ -109,9 +110,11 @@ class Release
         }
     }
 
-    protected function validateDocblocks()
+    protected function checkDocblocks()
     {
-        $this->logger->info('Validate docblocks.');
+        return;
+
+        $this->logger->info('Checking the docblocks.');
 
         $target = "/tmp/phpdoc/{$this->package}";
 
@@ -147,7 +150,7 @@ class Release
         }
 
         if ($missing) {
-            throw new Exception('Docblocks not valid.');
+            throw new Exception('Docblocks do not appear valid.');
         }
 
         // are there other invalidities?
@@ -158,11 +161,26 @@ class Release
             }
             // invalid lines have 2-space indents
             if (substr($line, 0, 2) == '  ') {
-                throw new Exception('Docblocks not valid.');
+                throw new Exception('Docblocks do not appear valid.');
             }
         }
 
         // guess they're valid
         $this->logger->info('Docblocks appear valid.');
+    }
+
+    protected function checkChangelog()
+    {
+        $this->logger->info('Checking the CHANGELOG.');
+
+        $lastChangelog = $this->vcs->getChangelogTimestamp();
+        $lastCommit = $this->vcs->getLastCommitTimestamp();
+        if ($lastChangelog <= $lastCommit) {
+            $this->logger->info('CHANGELOG appears up to date.');
+            return;
+        }
+
+        $this->logSinceTimestamp($lastCommit);
+        throw new Exception('CHANGELOG does not appear up to date.');
     }
 }
