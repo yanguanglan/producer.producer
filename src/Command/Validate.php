@@ -47,7 +47,6 @@ class Validate
     protected function validate()
     {
         $this->logger->info("Validating {$this->package} {$this->version}");
-        $this->repo->checkStatus();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->runTests();

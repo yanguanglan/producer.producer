@@ -31,13 +31,19 @@ class Git extends AbstractRepo
 
     public function sync()
     {
-        $last = $this->shell('git pull', $output, $return);
+        $this->shell('git pull', $output, $return);
         if ($return) {
-            throw new Exception($last, $return);
+            throw new Exception('Pull failed.');
         }
-        $last = $this->shell('git push', $output, $return);
+
+        $this->shell('git push', $output, $return);
         if ($return) {
-            throw new Exception($last, $return);
+            throw new Exception('Push failed.');
+        }
+
+        $this->shell('git status --porcelain', $output, $return);
+        if ($return || $output) {
+            throw new Exception('Status failed.');
         }
     }
 
@@ -73,13 +79,5 @@ class Git extends AbstractRepo
     {
         $this->shell("git log --name-only --since='$date' --reverse", $output);
         return $output;
-    }
-
-    public function checkStatus()
-    {
-        $this->shell('git status --porcelain', $output, $return);
-        if ($return || $output) {
-            throw new Exception('Local status is incomplete.');
-        }
     }
 }
