@@ -125,7 +125,7 @@ class Github implements ApiInterface
 
         $response = $this->api(
             'POST',
-            "/repos/auraphp/{$this->repoName}/releases",
+            "/repos/{$this->repoName}/releases",
             $body,
             true
         );
