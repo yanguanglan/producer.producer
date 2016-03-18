@@ -19,11 +19,10 @@ class Release extends Validate
     protected function release()
     {
         $this->logger->info("Releasing $this->package $this->version");
-        $changes = $this->fsio->isFile('CHANGES', 'CHANGES.md');
         $this->api->release(
             $this->repo->getBranch(),
             $this->version,
-            $this->fsio->get($changes),
+            $this->repo->getChanges(),
             $this->isPreRelease()
         );
         $this->repo->pull();

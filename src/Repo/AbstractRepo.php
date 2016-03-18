@@ -95,6 +95,12 @@ abstract class AbstractRepo implements RepoInterface
         }
     }
 
+    public function getChanges()
+    {
+        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
+        return $this->fsio->get($file);
+    }
+
     public function checkDocblocks()
     {
         // where to write validation records?
