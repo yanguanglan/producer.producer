@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
  * @package producer/producer
  *
  */
-class Preflight
+class Validate
 {
     protected $composer;
     protected $package;
@@ -33,8 +33,7 @@ class Preflight
 
     public function __invoke(array $argv)
     {
-        $this->setComposerPackage();
-        $this->setVersion(array_shift($argv));
+        $this->setPackageAndVersion(array_shift($argv));
         $this->repo->pull();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
@@ -42,25 +41,21 @@ class Preflight
         $this->checkDocblocks();
         $this->checkChangelog();
         $this->showIssues();
-        $this->logger->info('Preflight complete!');
+        $this->logger->info("{$this->package} {$this->version} appears valid for release!");
     }
 
-    protected function setComposerPackage()
-    {
-        $this->composer = $this->repo->getComposer();
-        $this->package = $this->composer->name;
-        $this->logger->info("Composer package '{$this->package}'.");
-    }
-
-    protected function setVersion($version)
+    protected function setPackageAndVersion($version)
     {
         if (! $version) {
             throw new Exception('Please specify a version number.');
         }
 
+        $this->composer = $this->repo->getComposer();
+        $this->package = $this->composer->name;
+
         if ($this->isValidVersion($version)) {
             $this->version = $version;
-            $this->logger->info("Preflighting version '{$this->version}'.");
+            $this->logger->info("Validating {$this->package} {$this->version}");
             return;
         }
 
@@ -125,6 +120,7 @@ class Preflight
         $issues = $this->api->fetchIssues();
         if (empty($issues)) {
             $this->logger->info('No open issues.');
+            return;
         }
 
         $this->logger->warning('There are open issues:');

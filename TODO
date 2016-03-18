@@ -4,13 +4,9 @@
 
 - allow for repo-specific .producer file
 
-- for `release` version, against previous major/minor/bugfix version numbers
+- for `validate` version, against previous major/minor/bugfix version numbers
 
 - for `release`, send notifications
-
-- for `release`, only check docblocks for beta, RC, and stable releases?
-
-- separate `preflight` and `release` commands, each to take a version number?
 
 
 ## New Commands
@@ -25,9 +21,6 @@ producer versions
     lists existing release versions
 
 producer log-since-release [$version]
-
-producer preflight $version
-    checks that a release would be valid
 
 producer release $version
     checks that a release would be valid
