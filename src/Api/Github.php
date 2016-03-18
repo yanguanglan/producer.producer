@@ -105,4 +105,24 @@ class Github implements ApiInterface
         }
         return $issues;
     }
+
+    public function release($source, $version, $changes, $isPreRelease)
+    {
+        $body = json_encode([
+            'tag_name' => $version,
+            'target_commitish' => $source,
+            'name' => $version,
+            'body' => $changes,
+            'draft' => false,
+            'prerelease' => $isPreRelease,
+        ]);
+
+        $response = $this->api('POST', "/repos/auraphp/{$this->repoName}/releases", $body);
+        if (! isset($response->id)) {
+            $message = var_export((array) $response, true);
+            throw new Exception($message);
+        }
+
+        return $response;
+    }
 }

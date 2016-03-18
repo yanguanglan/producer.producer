@@ -53,7 +53,7 @@ abstract class AbstractRepo implements RepoInterface
     public function checkSupportFiles()
     {
         $files = [
-            'CHANGELOG',
+            'CHANGES',
             'CONTRIBUTING',
             'LICENSE',
             'README',
@@ -97,20 +97,17 @@ abstract class AbstractRepo implements RepoInterface
 
     public function checkDocblocks()
     {
-        // where to write validatoin records?
+        // where to write validation records?
         $target = $this->fsio->path('/tmp/phpdoc');
 
-        // remove previous validation records
+        // remove previous validation records, if any
         $this->shell("rm -rf {$target}");
 
         // validate
         $cmd = "phpdoc -d src/ -t {$target} --force --verbose --template=xml";
         $line = $this->shell($cmd, $output, $return);
 
-        // remove phpdoc log files
-        $this->shell('rm -f phpdoc-*.log');
-
-        // get the XML file and look for errors
+        // get the XML file
         $xml = simplexml_load_file("{$target}/structure.xml");
 
         // are there missing @package tags?

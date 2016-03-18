@@ -47,7 +47,7 @@ class Git extends AbstractRepo
 
     public function getChangelogDate()
     {
-        $file = $this->fsio->isFile('CHANGELOG', 'CHANGELOG.md');
+        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
         if (! $file) {
             throw new Exception("{$file} is missing.");
         }

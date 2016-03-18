@@ -35,6 +35,11 @@ class Validate
     {
         $this->setVersion(array_shift($argv));
         $this->setComposerAndPackage();
+        $this->validate();
+    }
+
+    protected function validate()
+    {
         $this->logger->info("Validating {$this->package} {$this->version}");
         $this->repo->pull();
         $this->repo->checkStatus();
@@ -79,22 +84,22 @@ class Validate
 
     protected function checkChangelog()
     {
-        $this->logger->info('Checking if CHANGELOG up to date.');
+        $this->logger->info('Checking if CHANGES up to date.');
 
         $lastChangelog = $this->repo->getChangelogDate();
-        $this->logger->info("CHANGELOG date is $lastChangelog.");
+        $this->logger->info("CHANGES date is $lastChangelog.");
 
         $lastCommit = $this->repo->getLastCommitDate();
         $this->logger->info("Last commit date is $lastCommit.");
 
         if ($lastChangelog == $lastCommit) {
-            $this->logger->info('CHANGELOG appears up to date.');
+            $this->logger->info('CHANGES appears up to date.');
             return;
         }
 
-        $this->logger->error('CHANGELOG appears out of date.');
+        $this->logger->error('CHANGES appears out of date.');
         $this->repo->logSinceDate($lastChangelog);
-        throw new Exception('Please update and commit the CHANGELOG.');
+        throw new Exception('Please update and commit the CHANGES.');
     }
 
     protected function checkDocblocks()
