@@ -33,7 +33,9 @@ class Validate
 
     public function __invoke(array $argv)
     {
-        $this->setPackageAndVersion(array_shift($argv));
+        $this->setVersion(array_shift($argv));
+        $this->setComposerAndPackage();
+        $this->logger->info("Validating {$this->package} {$this->version}");
         $this->repo->pull();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
@@ -44,18 +46,21 @@ class Validate
         $this->logger->info("{$this->package} {$this->version} appears valid for release!");
     }
 
-    protected function setPackageAndVersion($version)
+    protected function setComposerAndPackage()
+    {
+        $this->repo->validateComposer();
+        $this->composer = $this->repo->getComposer();
+        $this->package = $this->composer->name;
+    }
+
+    protected function setVersion($version)
     {
         if (! $version) {
             throw new Exception('Please specify a version number.');
         }
 
-        $this->composer = $this->repo->getComposer();
-        $this->package = $this->composer->name;
-
         if ($this->isValidVersion($version)) {
             $this->version = $version;
-            $this->logger->info("Validating {$this->package} {$this->version}");
             return;
         }
 

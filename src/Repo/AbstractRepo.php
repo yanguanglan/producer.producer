@@ -37,6 +37,11 @@ abstract class AbstractRepo implements RepoInterface
         return $result;
     }
 
+    public function validateComposer()
+    {
+        $this->shell('composer validate');
+    }
+
     public function getComposer()
     {
         if (! $this->composer) {

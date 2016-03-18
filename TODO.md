@@ -14,9 +14,6 @@
 Cf. existing aura bin commands at <https://github.com/auraphp/bin/tree/master/src/Command>.
 
 ```
-producer docs
-    checks the php docblocks, including @package tags
-
 producer versions
     lists existing release versions
 

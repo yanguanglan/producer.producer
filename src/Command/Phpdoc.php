@@ -10,7 +10,7 @@ use Producer\Repo\RepoInterface;
  * @package producer/producer
  *
  */
-class Docblocks
+class Phpdoc
 {
     public function __construct(
         LoggerInterface $logger,
