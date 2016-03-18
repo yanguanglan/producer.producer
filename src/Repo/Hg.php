@@ -10,6 +10,8 @@ namespace Producer\Repo;
 
 /**
  *
+ * A Mercurial repository.
+ *
  * @package producer/producer
  *
  */

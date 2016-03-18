@@ -14,15 +14,67 @@ use Psr\Log\LoggerInterface;
 
 /**
  *
+ * Base class for local VCS repos.
+ *
  * @package producer/producer
  *
  */
 abstract class AbstractRepo implements RepoInterface
 {
+    /**
+     *
+     * The VCS config file name.
+     *
+     * @var string
+     *
+     */
     protected $configFile = '';
+
+    /**
+     *
+     * The VCS config file data.
+     *
+     * @var array
+     *
+     */
     protected $configData = [];
+
+    /**
+     *
+     * The `composer.json` data.
+     *
+     * @var object
+     *
+     */
     protected $composer;
 
+    /**
+     *
+     * A filesystem I/O object.
+     *
+     * @var Fsio
+     *
+     */
+    protected $fsio;
+
+    /**
+     *
+     * A logger.
+     *
+     * @var LoggerInterface
+     *
+     */
+    protected $logger;
+
+    /**
+     *
+     * Constructor.
+     *
+     * @param Fsio $fsio A filesystem I/O object.
+     *
+     * @param LoggerInterface $logger A logger.
+     *
+     */
     public function __construct(Fsio $fsio, LoggerInterface $logger)
     {
         $this->fsio = $fsio;
@@ -30,24 +82,58 @@ abstract class AbstractRepo implements RepoInterface
         $this->configData = $this->fsio->parseIni($this->configFile, true);
     }
 
+    /**
+     *
+     * Returns the VCS repo origin (i.e., the remote API origin).
+     *
+     * @return string
+     *
+     */
     abstract public function getOrigin();
 
+    /**
+     *
+     * Returns the Composer package name.
+     *
+     * @return string
+     *
+     */
     public function getPackage()
     {
         return $this->getComposer()->name;
     }
-    protected function shell($cmd, &$output = null, &$return = null)
+
+    /**
+     *
+     * Executes shell commands.
+     *
+     * @param string $cmd The shell command to execute.
+     *
+     * @param array $output Returns shell output through the reference.
+     *
+     * @param mixed $return Returns the exit code through this reference.
+     *
+     * @return string The last line of output.
+     *
+     * @see exec
+     */
+    protected function shell($cmd, &$output = [], &$return = null)
     {
         $cmd = str_replace('; ', ';\\' . PHP_EOL, $cmd);
         $this->logger->debug("> $cmd");
         $output = null;
-        $result = exec($cmd, $output, $return);
+        $last = exec($cmd, $output, $return);
         foreach ($output as $line) {
             $this->logger->debug("< $line");
         }
-        return $result;
+        return $last;
     }
 
+    /**
+     *
+     * Validates the `composer.json` file.
+     *
+     */
     public function validateComposer()
     {
         $last = $this->shell('composer validate', $output, $return);
@@ -56,6 +142,13 @@ abstract class AbstractRepo implements RepoInterface
         }
     }
 
+    /**
+     *
+     * Gets the `composer.json` file data.
+     *
+     * @return object
+     *
+     */
     public function getComposer()
     {
         if (! $this->composer) {
@@ -64,6 +157,11 @@ abstract class AbstractRepo implements RepoInterface
         return $this->composer;
     }
 
+    /**
+     *
+     * Checks the various support files.
+     *
+     */
     public function checkSupportFiles()
     {
         $files = [
@@ -96,6 +194,11 @@ abstract class AbstractRepo implements RepoInterface
         }
     }
 
+    /**
+     *
+     * Checks to see that the current year is in the LICENSE.
+     *
+     */
     public function checkLicenseYear()
     {
         $file = $this->fsio->isFile('LICENSE', 'LICENSE.md');
@@ -106,21 +209,36 @@ abstract class AbstractRepo implements RepoInterface
         }
     }
 
+    /**
+     *
+     * Runs the tests using phpunit.
+     *
+     */
     public function runTests()
     {
         $this->shell('composer update');
-        $line = $this->shell('phpunit', $output, $return);
+        $last = $this->shell('phpunit', $output, $return);
         if ($return) {
-            throw new Exception($line);
+            throw new Exception($last);
         }
     }
 
+    /**
+     *
+     * Gets the contents of the CHANGES file.
+     *
+     */
     public function getChanges()
     {
         $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
         return $this->fsio->get($file);
     }
 
+    /**
+     *
+     * Checks the `src/` docblocks using phpdoc.
+     *
+     */
     public function checkDocblocks()
     {
         // where to write validation records?

@@ -12,6 +12,8 @@ use Producer\Exception;
 
 /**
  *
+ * A Git repository.
+ *
  * @package producer/producer
  *
  */
