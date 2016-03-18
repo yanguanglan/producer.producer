@@ -14,15 +14,51 @@ use Psr\Log\LoggerInterface;
 
 /**
  *
+ * Base command class.
+ *
  * @package producer/producer
  *
  */
 abstract class AbstractCommand
 {
+    /**
+     *
+     * The logger.
+     *
+     * @var LoggerInterface
+     *
+     */
     protected $logger;
+
+    /**
+     *
+     * The local repository.
+     *
+     * @var RepoInterface
+     *
+     */
     protected $repo;
+
+    /**
+     *
+     * The remote API.
+     *
+     * @var ApiInterface
+     *
+     */
     protected $api;
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param LoggerInterface $logger The logger.
+     *
+     * @param RepoInterface $repo The local repository.
+     *
+     * @param ApiInterface $api The remote API.
+     *
+     */
     public function __construct(
         LoggerInterface $logger,
         RepoInterface $repo,
@@ -32,4 +68,15 @@ abstract class AbstractCommand
         $this->repo = $repo;
         $this->api = $api;
     }
+
+    /**
+     *
+     * The command logic.
+     *
+     * @param array $argv Command line arguments.
+     *
+     * @return mixed
+     *
+     */
+    abstract public function __invoke(array $argv);
 }

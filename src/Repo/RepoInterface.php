@@ -17,7 +17,10 @@ interface RepoInterface
 {
     public function getOrigin();
     public function getBranch();
+    public function getPackage();
     public function sync();
     public function checkSupportFiles();
     public function checkLicenseYear();
+    public function runTests();
+    public function checkDocblocks();
 }

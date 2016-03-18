@@ -14,11 +14,22 @@ use Producer\Repo\RepoInterface;
 
 /**
  *
+ * Show all open issues.
+ *
  * @package producer/producer
  *
  */
 class Issues extends AbstractCommand
 {
+    /**
+     *
+     * The command logic.
+     *
+     * @param array $argv Command line arguments.
+     *
+     * @return mixed
+     *
+     */
     public function __invoke(array $argv)
     {
         $issues = $this->api->issues();

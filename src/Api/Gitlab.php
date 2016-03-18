@@ -44,6 +44,15 @@ class Gitlab implements ApiInterface
      */
     protected $token;
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $origin The repository remote origin.
+     *
+     * @param string $token The API secret token.
+     *
+     */
     public function __construct($origin, $token)
     {
         $this->apiurl = "https://gitlab.com/api/v3";

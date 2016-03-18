@@ -32,6 +32,10 @@ abstract class AbstractRepo implements RepoInterface
 
     abstract public function getOrigin();
 
+    public function getPackage()
+    {
+        return $this->getComposer()->name;
+    }
     protected function shell($cmd, &$output = null, &$return = null)
     {
         $cmd = str_replace('; ', ';\\' . PHP_EOL, $cmd);

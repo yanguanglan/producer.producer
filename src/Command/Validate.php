@@ -15,42 +15,66 @@ use Psr\Log\LoggerInterface;
 
 /**
  *
+ * Validate the package but do not release it.
+ *
  * @package producer/producer
  *
  */
 class Validate extends AbstractCommand
 {
-    protected $composer;
+    /**
+     *
+     * The Composer package name.
+     *
+     * @var string
+     *
+     */
     protected $package;
+
+    /**
+     *
+     * The version number to validate.
+     *
+     * @var string
+     *
+     */
     protected $version;
 
+    /**
+     *
+     * The command logic.
+     *
+     * @param array $argv Command line arguments.
+     *
+     * @return mixed
+     *
+     */
     public function __invoke(array $argv)
     {
         $this->setVersion(array_shift($argv));
-        $this->repo->sync();
-        $this->setComposerAndPackage();
-        $this->validate();
-    }
 
-    protected function validate()
-    {
+        $this->repo->sync();
+        $this->repo->validateComposer();
+
+        $this->package = $this->repo->getPackage();
         $this->logger->info("Validating {$this->package} {$this->version}");
+
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->runTests();
         $this->checkDocblocks();
-        $this->checkChangelog();
-        $this->showIssues();
+        $this->checkChanges();
+        $this->checkIssues();
         $this->logger->info("{$this->package} {$this->version} appears valid for release!");
     }
 
-    protected function setComposerAndPackage()
-    {
-        $this->repo->validateComposer();
-        $this->composer = $this->repo->getComposer();
-        $this->package = $this->composer->name;
-    }
-
+    /**
+     *
+     * Sets the version from a command-line argument.
+     *
+     * @param string $version The command-line argument.
+     *
+     */
     protected function setVersion($version)
     {
         if (! $version) {
@@ -67,6 +91,15 @@ class Validate extends AbstractCommand
         throw new Exception($message);
     }
 
+    /**
+     *
+     * Is the version number valid?
+     *
+     * @param string $version The version number.
+     *
+     * @return bool
+     *
+     */
     protected function isValidVersion($version)
     {
         $format = '^(\d+.\d+.\d+)(-(dev|alpha\d+|beta\d+|RC\d+))?$';
@@ -74,26 +107,11 @@ class Validate extends AbstractCommand
         return (bool) $matches;
     }
 
-    protected function checkChangelog()
-    {
-        $this->logger->info('Checking if CHANGES up to date.');
-
-        $lastChangelog = $this->repo->getChangelogDate();
-        $this->logger->info("CHANGES date is $lastChangelog.");
-
-        $lastCommit = $this->repo->getLastCommitDate();
-        $this->logger->info("Last commit date is $lastCommit.");
-
-        if ($lastChangelog == $lastCommit) {
-            $this->logger->info('CHANGES appears up to date.');
-            return;
-        }
-
-        $this->logger->error('CHANGES appears out of date.');
-        $this->repo->logSinceDate($lastChangelog);
-        throw new Exception('Please update and commit the CHANGES.');
-    }
-
+    /**
+     *
+     * Checks if the `src/` docblocks are valid; skips for dev/alpha versions.
+     *
+     */
     protected function checkDocblocks()
     {
         switch (true) {
@@ -118,7 +136,37 @@ class Validate extends AbstractCommand
         $this->repo->checkDocblocks();
     }
 
-    protected function showIssues()
+    /**
+     *
+     * Checks to see if the CHANGES are up to date.
+     *
+     */
+    protected function checkChanges()
+    {
+        $this->logger->info('Checking if CHANGES up to date.');
+
+        $lastChangelog = $this->repo->getChangelogDate();
+        $this->logger->info("CHANGES date is $lastChangelog.");
+
+        $lastCommit = $this->repo->getLastCommitDate();
+        $this->logger->info("Last commit date is $lastCommit.");
+
+        if ($lastChangelog == $lastCommit) {
+            $this->logger->info('CHANGES appears up to date.');
+            return;
+        }
+
+        $this->logger->error('CHANGES appears out of date.');
+        $this->repo->logSinceDate($lastChangelog);
+        throw new Exception('Please update and commit the CHANGES.');
+    }
+
+    /**
+     *
+     * Checks to see if there are open issues.
+     *
+     */
+    protected function checkIssues()
     {
         $issues = $this->api->issues();
         if (empty($issues)) {
