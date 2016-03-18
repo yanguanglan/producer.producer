@@ -8,6 +8,11 @@
 
 - for `release`, send notifications
 
+- for `release`, only check docblocks for beta, RC, and stable releases?
+
+- separate `preflight` and `release` commands, each to take a version number?
+
+
 ## New Commands
 
 Cf. existing aura bin commands at <https://github.com/auraphp/bin/tree/master/src/Command>.
@@ -19,14 +24,12 @@ producer docs
 producer versions
     lists existing release versions
 
-producer log-since <$version>
+producer log-since-release [$version]
 
-producer release [ <$branch> ]
-    switches to $branch if specified
+producer preflight $version
     checks that a release would be valid
 
-producer release <$branch> <$version>
-    switches to $branch, which must be specified
+producer release $version
     checks that a release would be valid
     actually does the release (bitbucket is just a tag)
 ```

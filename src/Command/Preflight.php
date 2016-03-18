@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
  * @package producer/producer
  *
  */
-class Release
+class Preflight
 {
     protected $composer;
     protected $package;
@@ -34,18 +34,15 @@ class Release
     public function __invoke(array $argv)
     {
         $this->setComposerPackage();
-        $this->setBranch(array_shift($argv));
         $this->setVersion(array_shift($argv));
-
         $this->repo->pull();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->runTests();
-        $this->repo->checkDocblocks();
+        $this->checkDocblocks();
         $this->checkChangelog();
         $this->showIssues();
-
-        $this->logger->info('Done!');
+        $this->logger->info('Preflight complete!');
     }
 
     protected function setComposerPackage()
@@ -55,25 +52,15 @@ class Release
         $this->logger->info("Composer package '{$this->package}'.");
     }
 
-    protected function setBranch($branch)
-    {
-        if ($branch) {
-            $this->repo->checkout($branch);
-        }
-        $this->branch = $this->repo->getBranch();
-        $this->logger->info("Working branch is '{$this->branch}'.");
-    }
-
     protected function setVersion($version)
     {
         if (! $version) {
-            $this->logger->info('Dry run; will not release.');
-            return;
+            throw new Exception('Please specify a version number.');
         }
 
         if ($this->isValidVersion($version)) {
             $this->version = $version;
-            $this->logger->info("Preparing version '{$this->version}' for release.");
+            $this->logger->info("Preflighting version '{$this->version}'.");
             return;
         }
 
@@ -107,6 +94,30 @@ class Release
         $this->logger->error('CHANGELOG appears out of date.');
         $this->repo->logSinceDate($lastChangelog);
         throw new Exception('Please update and commit the CHANGELOG.');
+    }
+
+    protected function checkDocblocks()
+    {
+        switch (true) {
+            case substr($this->version, 0, 2) == '0.':
+                $skip = '0.x';
+                break;
+            case strpos($this->version, 'dev') !== false:
+                $skip = 'dev';
+                break;
+            case strpos($this->version, 'alpha') !== false:
+                $skip = 'alpha';
+                break;
+            default:
+                $skip = false;
+        }
+
+        if ($skip) {
+            $this->logger->info("Skipping docblock check for $skip release.");
+            return;
+        }
+
+        $this->repo->checkDocblocks();
     }
 
     protected function showIssues()
