@@ -37,6 +37,7 @@ class Validate
         $this->setComposerAndPackage();
         $this->logger->info("Validating {$this->package} {$this->version}");
         $this->repo->pull();
+        $this->repo->checkStatus();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->runTests();

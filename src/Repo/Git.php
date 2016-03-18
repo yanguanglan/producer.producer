@@ -78,4 +78,12 @@ class Git extends AbstractRepo
         $this->shell("git log --name-only --since='$date' --reverse", $output);
         return $output;
     }
+
+    public function checkStatus()
+    {
+        $this->shell('git status --porcelain', $output, $return);
+        if ($return || $output) {
+            throw new Exception('Local status is incomplete.');
+        }
+    }
 }
