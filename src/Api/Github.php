@@ -1,6 +1,8 @@
 <?php
 namespace Producer\Api;
 
+use Producer\Exception;
+
 /**
  *
  * @package producer/producer
@@ -56,7 +58,11 @@ class Github implements ApiInterface
 
         do {
 
-            $url = $this->apiurl . $path . "page={$page}";
+            $url = $this->apiurl . $path;
+            if (! $one) {
+                $url .= "page={$page}";
+            }
+
             $context = stream_context_create([
                 'http' => [
                     'method' => $method,
@@ -117,7 +123,13 @@ class Github implements ApiInterface
             'prerelease' => $isPreRelease,
         ]);
 
-        $response = $this->api('POST', "/repos/auraphp/{$this->repoName}/releases", $body);
+        $response = $this->api(
+            'POST',
+            "/repos/auraphp/{$this->repoName}/releases",
+            $body,
+            true
+        );
+
         if (! isset($response->id)) {
             $message = var_export((array) $response, true);
             throw new Exception($message);
