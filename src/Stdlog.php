@@ -1,4 +1,11 @@
 <?php
+/**
+ *
+ * This file is part of Producer for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ */
 namespace Producer;
 
 use Psr\Log\LoggerInterface;

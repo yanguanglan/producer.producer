@@ -1,5 +1,12 @@
 #!/usr/bin/env php
 <?php
+/**
+ *
+ * This file is part of Producer for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ */
 namespace Producer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';

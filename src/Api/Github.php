@@ -1,50 +1,100 @@
 <?php
+/**
+ *
+ * This file is part of Producer for PHP.
+ *
+ * @license http://opensource.org/licenses/MIT MIT
+ *
+ */
 namespace Producer\Api;
 
 use Producer\Exception;
 
 /**
  *
+ * The Github API.
+ *
  * @package producer/producer
  *
  */
 class Github implements ApiInterface
 {
+    /**
+     *
+     * The URL to the API.
+     *
+     * @var string
+     *
+     */
     protected $apiurl;
+
+    /**
+     *
+     * The API repository name.
+     *
+     * @var string
+     *
+     */
     protected $repoName;
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param string $origin The repository remote origin.
+     *
+     * @param string $user The API username.
+     *
+     * @param string $token The API secret token.
+     *
+     */
     public function __construct($origin, $user, $token)
     {
         $this->apiurl = "https://{$user}:{$token}@api.github.com";
-        $this->setRepoName($origin);
-    }
 
-    protected function setRepoName($origin)
-    {
-        $repoName = $this->getRepoOrigin($origin);
-        if (substr($repoName, -4) == '.git') {
-            $repoName = substr($repoName, 0, -4);
-        }
-        $this->repoName = trim($repoName, '/');
-    }
-
-    protected function getRepoOrigin($origin)
-    {
         $ssh = 'git@github.com:';
         $len = strlen($ssh);
         if (substr($origin, 0, $len) == $ssh) {
-            return substr($origin, $len);
+            $repoName = substr($origin, $len);
+        } else {
+            // presume https://
+            $repoName = parse_url($origin, PHP_URL_PATH);
         }
 
-        // presume https://
-        return parse_url($origin, PHP_URL_PATH);
+        if (substr($repoName, -4) == '.git') {
+            $repoName = substr($repoName, 0, -4);
+        }
+
+        $this->repoName = trim($repoName, '/');
     }
 
+    /**
+     *
+     * Returns the API repository name.
+     *
+     * @return string
+     *
+     */
     public function getRepoName()
     {
         return $this->repoName;
     }
 
+    /**
+     *
+     * Call the API via HTTP.
+     *
+     * @param string $method The HTTP request method.
+     *
+     * @param string $path The API path.
+     *
+     * @param string $body The HTTP request body.
+     *
+     * @param bool $one Make only one call, not many to get many pages.
+     *
+     * @return mixed
+     *
+     */
     protected function api($method, $path, $body = null, $one = false)
     {
         if (strpos($path, '?') === false) {
@@ -98,6 +148,13 @@ class Github implements ApiInterface
         return $list;
     }
 
+    /**
+     *
+     * Returns a list of open issues from the API.
+     *
+     * @return array
+     *
+     */
     public function issues()
     {
         $list = $this->api('GET', "/repos/{$this->repoName}/issues?sort=created&direction=asc");
@@ -112,6 +169,21 @@ class Github implements ApiInterface
         return $issues;
     }
 
+    /**
+     *
+     * Submits a release to the API.
+     *
+     * @param string $source The source branch, tag, or commit hash.
+     *
+     * @param string $version The version number to release.
+     *
+     * @param string $changes The change notes for this release.
+     *
+     * @param bool $preRelease Is this a pre-release (non-production) version?
+     *
+     * @return mixed
+     *
+     */
     public function release($source, $version, $changes, $isPreRelease)
     {
         $body = json_encode([
