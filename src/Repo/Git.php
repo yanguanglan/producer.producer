@@ -29,17 +29,13 @@ class Git extends AbstractRepo
         return trim($branch);
     }
 
-    public function checkout($branch)
-    {
-        $this->shell("git checkout {$branch}", $output, $return);
-        if ($return) {
-            throw new Exception(implode(PHP_EOL, $output), $return);
-        }
-    }
-
-    public function pull()
+    public function sync()
     {
         $last = $this->shell('git pull', $output, $return);
+        if ($return) {
+            throw new Exception($last, $return);
+        }
+        $last = $this->shell('git push', $output, $return);
         if ($return) {
             throw new Exception($last, $return);
         }

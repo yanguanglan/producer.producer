@@ -33,15 +33,20 @@ class Validate
 
     public function __invoke(array $argv)
     {
-        $this->setVersion(array_shift($argv));
-        $this->setComposerAndPackage();
+        $this->prep(array_shift($argv));
         $this->validate();
+    }
+
+    protected function prep($version)
+    {
+        $this->setVersion($version);
+        $this->repo->sync();
+        $this->setComposerAndPackage();
     }
 
     protected function validate()
     {
         $this->logger->info("Validating {$this->package} {$this->version}");
-        $this->repo->pull();
         $this->repo->checkStatus();
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
@@ -128,7 +133,7 @@ class Validate
 
     protected function showIssues()
     {
-        $issues = $this->api->fetchIssues();
+        $issues = $this->api->issues();
         if (empty($issues)) {
             $this->logger->info('No open issues.');
             return;

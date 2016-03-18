@@ -2,12 +2,16 @@
 
 ## General
 
-- allow for repo-specific .producer file
+- allow for repo-specific .producer file, esp. to specify plugins, templates,
+  and support file names (e.g. "LICENSE" => "LICENSE.md").
 
-- for `validate` version, against previous major/minor/bugfix version numbers
+- for `validate`, check previous major/minor/bugfix version numbers
 
 - for `release`, send notifications
 
+- `release` for gitlab
+
+- `release` for bitbucket
 
 ## New Commands
 
@@ -19,7 +23,4 @@ producer versions
 
 producer log-since-release [$version]
 
-producer release $version
-    checks that a release would be valid
-    actually does the release (bitbucket is just a tag)
 ```

@@ -24,7 +24,7 @@ class Issues
 
     public function __invoke(array $argv)
     {
-        $issues = $this->api->fetchIssues();
+        $issues = $this->api->issues();
         if (empty($issues)) {
             return;
         }

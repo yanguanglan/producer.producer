@@ -39,7 +39,10 @@ abstract class AbstractRepo implements RepoInterface
 
     public function validateComposer()
     {
-        $this->shell('composer validate');
+        $last = $this->shell('composer validate', $output, $return);
+        if ($return) {
+            throw new Exception($last);
+        }
     }
 
     public function getComposer()
@@ -63,6 +66,9 @@ abstract class AbstractRepo implements RepoInterface
             if (! $found) {
                 throw new Exception("{$file} file is missing.");
             }
+            if (trim($this->fsio->get($found)) === '') {
+                throw new Exception("{$found} file is empty.");
+            }
         }
 
         $files = [
@@ -72,6 +78,9 @@ abstract class AbstractRepo implements RepoInterface
         foreach ($files as $file) {
             if (! $this->fsio->isFile($file)) {
                 throw new Exception("{$file} file is missing.");
+            }
+            if (trim($this->fsio->get($found)) === '') {
+                throw new Exception("{$found} file is empty.");
             }
         }
     }

@@ -86,7 +86,7 @@ class Bitbucket implements ApiInterface
         return $list;
     }
 
-    public function fetchIssues()
+    public function issues()
     {
         $list = $this->api('GET', "/repositories/{$this->repoName}/issues?sort=created_on");
         $issues = [];

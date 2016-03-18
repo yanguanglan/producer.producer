@@ -58,7 +58,11 @@ class Gitlab implements ApiInterface
 
         do {
 
-            $url = $this->apiurl . $path . "page={$page}";
+            $url = $this->apiurl . $path;
+            if (! $one) {
+                $url .= "page={$page}";
+            }
+
             $context = stream_context_create([
                 'http' => [
                     'method' => $method,
@@ -94,7 +98,7 @@ class Gitlab implements ApiInterface
         return $list;
     }
 
-    public function fetchIssues()
+    public function issues()
     {
         $repoName = urlencode($this->repoName);
         $list = $this->api('GET', "/projects/{$repoName}/issues?sort=asc");
@@ -108,5 +112,30 @@ class Gitlab implements ApiInterface
             ];
         }
         return $issues;
+    }
+
+    public function release($source, $version, $changes, $preRelease)
+    {
+        $body = json_encode([
+            'id' => $this->repoName,
+            'tag_name' => $version,
+            'ref' => $source,
+            'release_description' => $changes
+        ]);
+
+        $repoName = urlencode($this->repoName);
+        $response = $this->api(
+            'POST',
+            "/projects/{$repoName}/repository/tags",
+            $body,
+            true
+        );
+
+        if (! isset($response->name)) {
+            $message = var_export((array) $response, true);
+            throw new Exception($message);
+        }
+
+        return $response;
     }
 }

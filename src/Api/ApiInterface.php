@@ -9,5 +9,6 @@ namespace Producer\Api;
 interface ApiInterface
 {
     public function getRepoName();
-    public function fetchIssues();
+    public function issues();
+    public function release($source, $version, $changes, $preRelease);
 }

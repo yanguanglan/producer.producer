@@ -98,7 +98,7 @@ class Github implements ApiInterface
         return $list;
     }
 
-    public function fetchIssues()
+    public function issues()
     {
         $list = $this->api('GET', "/repos/{$this->repoName}/issues?sort=created&direction=asc");
         $issues = [];

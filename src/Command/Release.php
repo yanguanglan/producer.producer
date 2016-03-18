@@ -5,8 +5,7 @@ class Release extends Validate
 {
     public function __invoke(array $argv)
     {
-        $this->setVersion(array_shift($argv));
-        $this->setComposerAndPackage();
+        $this->prep(array_shift($argv));
 
         $this->logger->warning("THIS WILL RELEASE THE PACKAGE.");
         $this->logger->warning("YOU HAVE 3 SECONDS TO CANCEL.");
@@ -25,7 +24,7 @@ class Release extends Validate
             $this->repo->getChanges(),
             $this->isPreRelease()
         );
-        $this->repo->pull();
+        $this->repo->sync();
         $this->logger->info("Released $this->package $this->version !");
     }
 
