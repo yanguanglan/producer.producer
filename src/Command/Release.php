@@ -1,17 +1,17 @@
 <?php
 namespace Producer\Command;
 
+/**
+ *
+ * @package producer/producer
+ *
+ */
 class Release extends Validate
 {
     public function __invoke(array $argv)
     {
-        $this->prep(array_shift($argv));
-
         $this->logger->warning("THIS WILL RELEASE THE PACKAGE.");
-        $this->logger->warning("YOU HAVE 3 SECONDS TO CANCEL.");
-        sleep(3);
-
-        $this->validate();
+        parent::__invoke($argv);
         $this->release();
     }
 

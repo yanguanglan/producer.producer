@@ -99,4 +99,9 @@ class Bitbucket implements ApiInterface
         }
         return $issues;
     }
+
+    public function release($source, $version, $changes, $preRelease)
+    {
+        throw new Exception('Bitbucket release not implemented.');
+    }
 }

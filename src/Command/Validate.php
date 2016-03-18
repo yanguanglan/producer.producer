@@ -11,37 +11,18 @@ use Psr\Log\LoggerInterface;
  * @package producer/producer
  *
  */
-class Validate
+class Validate extends AbstractCommand
 {
     protected $composer;
     protected $package;
-    protected $version = false;
-    protected $branch;
-    protected $logger;
-    protected $repo;
-    protected $api;
-
-    public function __construct(
-        LoggerInterface $logger,
-        RepoInterface $repo,
-        ApiInterface $api
-    ) {
-        $this->logger = $logger;
-        $this->repo = $repo;
-        $this->api = $api;
-    }
+    protected $version;
 
     public function __invoke(array $argv)
     {
-        $this->prep(array_shift($argv));
-        $this->validate();
-    }
-
-    protected function prep($version)
-    {
-        $this->setVersion($version);
+        $this->setVersion(array_shift($argv));
         $this->repo->sync();
         $this->setComposerAndPackage();
+        $this->validate();
     }
 
     protected function validate()

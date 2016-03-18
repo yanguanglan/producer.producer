@@ -10,18 +10,8 @@ use Producer\Repo\RepoInterface;
  * @package producer/producer
  *
  */
-class Phpdoc
+class Phpdoc extends AbstractCommand
 {
-    public function __construct(
-        LoggerInterface $logger,
-        RepoInterface $repo,
-        ApiInterface $api
-    ) {
-        $this->logger = $logger;
-        $this->repo = $repo;
-        $this->api = $api;
-    }
-
     public function __invoke(array $args)
     {
         $this->repo->checkDocblocks();
