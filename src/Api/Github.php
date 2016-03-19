@@ -9,6 +9,7 @@
 namespace Producer\Api;
 
 use Producer\Exception;
+use Producer\Repo\RepoInterface;
 
 /**
  *
@@ -181,18 +182,21 @@ class Github implements ApiInterface
      *
      * @param bool $preRelease Is this a pre-release (non-production) version?
      *
-     * @return mixed
-     *
      */
-    public function release($source, $version, $changes, $isPreRelease)
+    public function release(RepoInterface $repo, $version)
     {
+        $prerelease = substr($this->version, 0, 2) == '0.'
+            || strpos($this->version, 'dev') !== false
+            || strpos($this->version, 'alpha') !== false
+            || strpos($this->version, 'beta') !== false;
+
         $body = json_encode([
             'tag_name' => $version,
-            'target_commitish' => $source,
+            'target_commitish' => $repo->getBranch(),
             'name' => $version,
-            'body' => $changes,
+            'body' => $repo->getChanges(),
             'draft' => false,
-            'prerelease' => $isPreRelease,
+            'prerelease' => $preRelease,
         ]);
 
         $response = $this->api(
@@ -207,6 +211,6 @@ class Github implements ApiInterface
             throw new Exception($message);
         }
 
-        return $response;
+        $repo->sync();
     }
 }

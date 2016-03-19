@@ -8,6 +8,9 @@
  */
 namespace Producer\Api;
 
+use Producer\Exception;
+use Producer\Repo\RepoInterface;
+
 /**
  *
  * The GitLab API.
@@ -186,20 +189,14 @@ class Gitlab implements ApiInterface
      *
      * @param string $version The version number to release.
      *
-     * @param string $changes The change notes for this release.
-     *
-     * @param bool $preRelease Is this a pre-release (non-production) version?
-     *
-     * @return mixed
-     *
      */
-    public function release($source, $version, $changes, $preRelease)
+    public function release(RepoInterface $repo, $version)
     {
         $body = json_encode([
             'id' => $this->repoName,
             'tag_name' => $version,
-            'ref' => $source,
-            'release_description' => $changes
+            'ref' => $repo->getBranch(),
+            'release_description' => $repo->getChanges()
         ]);
 
         $repoName = urlencode($this->repoName);
@@ -215,6 +212,6 @@ class Gitlab implements ApiInterface
             throw new Exception($message);
         }
 
-        return $response;
+        $repo->sync();
     }
 }

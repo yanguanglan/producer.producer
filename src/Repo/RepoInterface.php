@@ -94,4 +94,15 @@ interface RepoInterface
      *
      */
     public function checkDocblocks();
+
+    /**
+     *
+     * Tags the repository.
+     *
+     * @param string $name The tag name.
+     *
+     * @param string $message The message for the tag.
+     *
+     */
+    public function tag($name, $message);
 }

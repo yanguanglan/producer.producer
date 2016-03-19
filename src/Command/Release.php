@@ -30,22 +30,8 @@ class Release extends Validate
     {
         $this->logger->warning("THIS WILL RELEASE THE PACKAGE.");
         parent::__invoke($argv);
-
         $this->logger->info("Releasing $this->package $this->version");
-
-        $preRelease = substr($this->version, 0, 2) == '0.'
-            || strpos($this->version, 'dev') !== false
-            || strpos($this->version, 'alpha') !== false
-            || strpos($this->version, 'beta') !== false;
-
-        $this->api->release(
-            $this->repo->getBranch(),
-            $this->version,
-            $this->repo->getChanges(),
-            $preRelease
-        );
-
-        $this->repo->sync();
+        $this->api->release($this->repo, $this->version);
         $this->logger->info("Released $this->package $this->version !");
     }
 }

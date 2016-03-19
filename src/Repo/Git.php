@@ -135,7 +135,7 @@ class Git extends AbstractRepo
 
     /**
      *
-     * Returns the log since a particular date, in chornological order.
+     * Returns the log since a particular date, in chronological order.
      *
      * @param string $date Return log entries since this date.
      *
