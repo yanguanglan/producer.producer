@@ -87,7 +87,7 @@ class Validate extends AbstractCommand
         }
 
         $message = "Version '{$this->version}' is invalid. "
-                 . "Please use the format '1.2.3(-dev|-alpha4|-beta5|-RC6)'.";
+                 . "Please use the format '1.2.3' or 'v1.2.3', optionally followed by (-dev4|-alpha5|-beta6|-RC7|-p8)'.";
         throw new Exception($message);
     }
 
@@ -102,7 +102,7 @@ class Validate extends AbstractCommand
      */
     protected function isValidVersion($version)
     {
-        $format = '^(\d+.\d+.\d+)(-(dev|alpha\d+|beta\d+|RC\d+))?$';
+        $format = '^(v?\d+.\d+.\d+)(-(dev|alpha\d+|beta\d+|RC\d+|p\d+))?$';
         preg_match("/$format/", $version, $matches);
         return (bool) $matches;
     }

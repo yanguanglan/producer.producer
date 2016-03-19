@@ -185,7 +185,7 @@ class Gitlab implements ApiInterface
      *
      * Submits a release to the API.
      *
-     * @param string $source The source branch, tag, or commit hash.
+     * @param RepoInterface $repo The repository.
      *
      * @param string $version The version number to release.
      *

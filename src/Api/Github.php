@@ -174,13 +174,9 @@ class Github implements ApiInterface
      *
      * Submits a release to the API.
      *
-     * @param string $source The source branch, tag, or commit hash.
+     * @param RepoInterface $repo The repository.
      *
      * @param string $version The version number to release.
-     *
-     * @param string $changes The change notes for this release.
-     *
-     * @param bool $preRelease Is this a pre-release (non-production) version?
      *
      */
     public function release(RepoInterface $repo, $version)
