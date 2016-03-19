@@ -13,7 +13,27 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('html_errors', 0);
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+$autoloader = false;
+
+$files = [
+    dirname(__DIR__) . '/vendor/autoload.php',
+    dirname(dirname(dirname(__DIR__))) . '/autoload.php',
+];
+
+foreach ($files as $file) {
+    echo $file . PHP_EOL;
+    if (file_exists($file) && is_readable($file)) {
+        $autoloader = $file;
+        break;
+    }
+}
+
+if (! $autoloader) {
+    echo "Could not find autoloader." . PHP_EOL;
+    exit(1);
+}
+
+require $autoloader;
 
 $container = new ProducerContainer(
     $_SERVER['HOME'],
