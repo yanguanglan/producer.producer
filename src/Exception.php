@@ -10,6 +10,8 @@ namespace Producer;
 
 /**
  *
+ * Package-level exception.
+ *
  * @package producer/producer
  *
  */

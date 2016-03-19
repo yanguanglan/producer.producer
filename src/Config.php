@@ -10,14 +10,38 @@ namespace Producer;
 
 /**
  *
+ * Producer configuration values.
+ *
  * @package producer/producer
  *
  */
 class Config
 {
+    /**
+     *
+     * The config values.
+     *
+     * @var array
+     *
+     */
     protected $data = [];
+
+    /**
+     *
+     * The name of the Producer config file.
+     *
+     * @var string
+     *
+     */
     protected $file = '.producer/config';
 
+    /**
+     *
+     * Constructor.
+     *
+     * @param Fsio $fsio A filesystem I/O object.
+     *
+     */
     public function __construct(Fsio $fsio)
     {
         if (! $fsio->isFile($this->file)) {
@@ -28,6 +52,15 @@ class Config
         $this->data = $fsio->parseIni($this->file);
     }
 
+    /**
+     *
+     * Returns a config value.
+     *
+     * @param string $key The config value.
+     *
+     * @return mixed
+     *
+     */
     public function get($key)
     {
         if (isset($this->data[$key])) {
