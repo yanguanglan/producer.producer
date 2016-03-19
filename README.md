@@ -8,7 +8,7 @@ Producer works in concert with [Composer](https://getcomposer.org). Install it f
 
 Then add `$COMPOSER_HOME/vendor/bin` to your `$PATH` ([instuctions here](https://getcomposer.org/doc/03-cli.md#global)).
 
-Finally, issue `composer global require producer/producer:~1.0` to install Producer.
+Finally, issue `composer global require producer/producer ~1.0` to install Producer.
 
 To test the installation, issue `producer` at the command line to see some "help" output.
 
