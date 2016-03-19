@@ -9,6 +9,10 @@
  */
 namespace Producer;
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('html_errors', 0);
+
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 $container = new ProducerContainer(
