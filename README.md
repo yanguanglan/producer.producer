@@ -4,9 +4,11 @@ Producer is a command-line tool to validate, and then release, your PHP library 
 
 ## Installing
 
-Add `$COMPOSER_HOME/vendor/bin` to your PATH ([instuctions here](https://getcomposer.org/doc/03-cli.md#global)).
+Producer works in concert with [Composer](https://getcomposer.org). Install it first.
 
-Then issue `composer global require producer/producer:~1.0` to install Producer.
+Then add `$COMPOSER_HOME/vendor/bin` to your `$PATH` ([instuctions here](https://getcomposer.org/doc/03-cli.md#global)).
+
+Finally, issue `composer global require producer/producer:~1.0` to install Producer.
 
 To test the installation, issue `producer` at the command line to see some "help" output.
 
@@ -24,8 +26,7 @@ github_token =
 gitlab_token =
 ; Bitbucket
 bitbucket_username =
-bitbucket_password =
-" > ~/.producer/config
+bitbucket_password =" > ~/.producer/config
 ```
 
 You can then edit `~/.producer/config` to enter your access credentials, any or all of:
@@ -42,8 +43,8 @@ Now that you have Producer installed and configured, change to the directory for
 
 - `producer issues` will show all the open issues from the remote origin
 - `producer phpdoc` will check the PHP docblocks in the `src/` directory
-- `producer validate <version>` will validate the repository for a <version> release, but won't actually release it
-- `producer release <version>` will validate, and then actually release, the <version>
+- `producer validate <version>` will validate the package for release, but won't actually release it
+- `producer release <version>` will validate, and then actually release, the package
 
 > NOTE: Producer reads the `.git` or `.hg` configuration data from the repository, so it knows whether you are using Github, Gitlab, or Bitbucket as the remote origin.
 
@@ -55,7 +56,7 @@ When you validate the library package, Producer will:
 - Validate the composer.json file
 - Check for informational files (see below) and for a `phpunit.xml.dist` file
 - Check that the LICENSE file has the current year in it
-- Call `composer update` and run the unit tests
+- Call `composer update`, run the unit tests, and make sure they cleaned up after
 - Check that the PHP docblocks in the `src/` directory are valid (see below)
 - Check that the CHANGES file is in the most-recent commit to the repository
 
