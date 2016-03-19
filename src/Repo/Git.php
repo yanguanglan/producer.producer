@@ -19,8 +19,22 @@ use Producer\Exception;
  */
 class Git extends AbstractRepo
 {
+    /**
+     *
+     * The Git config file name.
+     *
+     * @var string
+     *
+     */
     protected $configFile = '.git/config';
 
+    /**
+     *
+     * Returns the VCS repo origin (i.e., the remote API origin).
+     *
+     * @return string
+     *
+     */
     public function getOrigin()
     {
         if (! isset($this->configData['remote origin']['url'])) {
@@ -29,6 +43,13 @@ class Git extends AbstractRepo
         return $this->configData['remote origin']['url'];
     }
 
+    /**
+     *
+     * Returns the current branch.
+     *
+     * @return string
+     *
+     */
     public function getBranch()
     {
         $branch = $this->shell('git rev-parse --abbrev-ref HEAD', $output, $return);
@@ -38,6 +59,11 @@ class Git extends AbstractRepo
         return trim($branch);
     }
 
+    /**
+     *
+     * Syncs the repository with the origin: pull, push, and status.
+     *
+     */
     public function sync()
     {
         $this->shell('git pull', $output, $return);
@@ -56,7 +82,14 @@ class Git extends AbstractRepo
         }
     }
 
-    public function getChangelogDate()
+    /**
+     *
+     * Gets the last-committed date of the CHANGES file.
+     *
+     * @return string
+     *
+     */
+    public function getChangesDate()
     {
         $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
         if (! $file) {
@@ -67,13 +100,29 @@ class Git extends AbstractRepo
         return $this->findDate($output);
     }
 
+    /**
+     *
+     * Gets the last-committed date of the repository.
+     *
+     * @return string
+     *
+     */
     public function getLastCommitDate()
     {
         $this->shell("git log -1", $output, $return);
         return $this->findDate($output);
     }
 
-    protected function findDate($lines)
+    /**
+     *
+     * Finds the Date: line within an array of lines.
+     *
+     * @param array $lines An array of lines.
+     *
+     * @return string
+     *
+     */
+    protected function findDate(array $lines)
     {
         foreach ($lines as $line) {
             if (substr($line, 0, 5) == 'Date:') {
@@ -84,6 +133,15 @@ class Git extends AbstractRepo
         throw new Exception("No 'Date:' line found.");
     }
 
+    /**
+     *
+     * Returns the log since a particular date, in chornological order.
+     *
+     * @param string $date Return log entries since this date.
+     *
+     * @return array
+     *
+     */
     public function logSinceDate($date)
     {
         $this->shell("git log --name-only --since='$date' --reverse", $output);

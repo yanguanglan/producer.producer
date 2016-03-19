@@ -84,15 +84,6 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
-     * Returns the VCS repo origin (i.e., the remote API origin).
-     *
-     * @return string
-     *
-     */
-    abstract public function getOrigin();
-
-    /**
-     *
      * Returns the Composer package name.
      *
      * @return string
@@ -214,7 +205,7 @@ abstract class AbstractRepo implements RepoInterface
      * Runs the tests using phpunit.
      *
      */
-    public function runTests()
+    public function checkTests()
     {
         $this->shell('composer update');
         $last = $this->shell('phpunit', $output, $return);

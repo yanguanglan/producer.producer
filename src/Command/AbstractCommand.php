@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
  * @package producer/producer
  *
  */
-abstract class AbstractCommand
+abstract class AbstractCommand implements CommandInterface
 {
     /**
      *

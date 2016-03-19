@@ -61,7 +61,7 @@ class Validate extends AbstractCommand
 
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
-        $this->repo->runTests();
+        $this->repo->checkTests();
         $this->checkDocblocks();
         $this->checkChanges();
         $this->checkIssues();
@@ -145,7 +145,7 @@ class Validate extends AbstractCommand
     {
         $this->logger->info('Checking if CHANGES up to date.');
 
-        $lastChangelog = $this->repo->getChangelogDate();
+        $lastChangelog = $this->repo->getChangesDate();
         $this->logger->info("CHANGES date is $lastChangelog.");
 
         $lastCommit = $this->repo->getLastCommitDate();

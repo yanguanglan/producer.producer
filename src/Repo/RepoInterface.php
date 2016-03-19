@@ -10,17 +10,88 @@ namespace Producer\Repo;
 
 /**
  *
+ * Interface for repository classes.
+ *
  * @package producer/producer
  *
  */
 interface RepoInterface
 {
+    /**
+     *
+     * Returns the VCS repo origin (i.e., the remote API origin).
+     *
+     * @return string
+     *
+     */
     public function getOrigin();
+
+    /**
+     *
+     * Returns the current branch.
+     *
+     * @return string
+     *
+     */
     public function getBranch();
+
+    /**
+     *
+     * Returns the Composer package name.
+     *
+     * @return string
+     *
+     */
     public function getPackage();
+
+    /**
+     *
+     * Validates the `composer.json` file.
+     *
+     */
+    public function validateComposer();
+
+    /**
+     *
+     * Gets the `composer.json` file data.
+     *
+     * @return object
+     *
+     */
+    public function getComposer();
+
+    /**
+     *
+     * Syncs the repository with the origin: pull, push, and status.
+     *
+     */
     public function sync();
+
+    /**
+     *
+     * Checks the various support files.
+     *
+     */
     public function checkSupportFiles();
+
+    /**
+     *
+     * Checks to see that the current year is in the LICENSE.
+     *
+     */
     public function checkLicenseYear();
-    public function runTests();
+
+    /**
+     *
+     * Runs the tests using phpunit.
+     *
+     */
+    public function checkTests();
+
+    /**
+     *
+     * Checks the `src/` docblocks using phpdoc.
+     *
+     */
     public function checkDocblocks();
 }

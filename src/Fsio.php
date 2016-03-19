@@ -115,7 +115,13 @@ class Fsio
      *
      * @param string $file The file to read from.
      *
+     * @param bool $sections Process sections within the file?
+     *
+     * @param int $mode The INI scanner mode.
+     *
      * @return array
+     *
+     * @see parse_ini_file()
      *
      */
     public function parseIni($file, $sections = false, $mode = INI_SCANNER_NORMAL)

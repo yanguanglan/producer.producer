@@ -17,8 +17,22 @@ namespace Producer\Repo;
  */
 class Hg extends AbstractRepo
 {
+    /**
+     *
+     * The Mercurial config file name.
+     *
+     * @var string
+     *
+     */
     protected $configFile = '.hg/hgrc';
 
+    /**
+     *
+     * Returns the VCS repo origin (i.e., the remote API origin).
+     *
+     * @return string
+     *
+     */
     public function getOrigin()
     {
         if (! isset($this->config['paths']['default'])) {
