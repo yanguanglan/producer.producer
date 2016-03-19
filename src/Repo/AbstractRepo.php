@@ -173,7 +173,6 @@ abstract class AbstractRepo implements RepoInterface
 
         $files = [
             'phpunit.xml.dist',
-            'tests/bootstrap.php',
         ];
         foreach ($files as $file) {
             if (! $this->fsio->isFile($file)) {

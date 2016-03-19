@@ -90,6 +90,11 @@ class ProducerContainer
      */
     public function newCommand($name)
     {
+        $name = trim($name);
+        if (! $name || $name == 'help') {
+            return new Command\Help($this->logger);
+        }
+
         $class = "Producer\Command\\" . ucfirst($name);
         if (! class_exists($class)) {
             throw new Exception("Command '$name' not found.");
