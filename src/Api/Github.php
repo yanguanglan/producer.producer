@@ -181,10 +181,10 @@ class Github implements ApiInterface
      */
     public function release(RepoInterface $repo, $version)
     {
-        $prerelease = substr($this->version, 0, 2) == '0.'
-            || strpos($this->version, 'dev') !== false
-            || strpos($this->version, 'alpha') !== false
-            || strpos($this->version, 'beta') !== false;
+        $prerelease = substr($version, 0, 2) == '0.'
+            || strpos($version, 'dev') !== false
+            || strpos($version, 'alpha') !== false
+            || strpos($version, 'beta') !== false;
 
         $body = json_encode([
             'tag_name' => $version,
