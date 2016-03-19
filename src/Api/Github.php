@@ -192,7 +192,7 @@ class Github implements ApiInterface
             'name' => $version,
             'body' => $repo->getChanges(),
             'draft' => false,
-            'prerelease' => $preRelease,
+            'prerelease' => $prerelease,
         ]);
 
         $response = $this->api(
