@@ -21,7 +21,6 @@ $files = [
 ];
 
 foreach ($files as $file) {
-    echo $file . PHP_EOL;
     if (file_exists($file) && is_readable($file)) {
         $autoloader = $file;
         break;
