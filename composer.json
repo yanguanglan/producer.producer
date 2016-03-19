@@ -35,5 +35,8 @@
         "psr-4": {
             "Producer\\": "tests/"
         }
-    }
+    },
+    "bin": [
+        "bin/producer"
+    ]
 }
