@@ -147,4 +147,22 @@ class Git extends AbstractRepo
         $this->shell("git log --name-only --since='$date' --reverse", $output);
         return $output;
     }
+
+    /**
+     *
+     * Tags the repository.
+     *
+     * @param string $name The tag name.
+     *
+     * @param string $message The message for the tag.
+     *
+     */
+    public function tag($name, $message)
+    {
+        $message = escapeshellarg($message);
+        $last = $this->shell("git tag -a $name --message=$message", $output, $return);
+        if ($return) {
+            throw new Exception($last);
+        }
+    }
 }
