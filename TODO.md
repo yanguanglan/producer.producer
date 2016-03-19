@@ -16,12 +16,6 @@
 
     - check for @license tag in file-level docblock
 
-- `release`
-
-    - add bitbnucket support
-
-    - send notifications
-
 ## New Commands
 
 Cf. existing aura bin commands at <https://github.com/auraphp/bin/tree/master/src/Command>.
