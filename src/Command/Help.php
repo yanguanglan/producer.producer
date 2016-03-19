@@ -40,6 +40,15 @@ class Help implements CommandInterface
         $this->logger = $logger;
     }
 
+    /**
+     *
+     * The command logic.
+     *
+     * @param array $argv Command line arguments.
+     *
+     * @return mixed
+     *
+     */
     public function __invoke(array $argv)
     {
         $this->logger->info('Producer: a tool for releasing library packages.');

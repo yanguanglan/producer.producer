@@ -80,7 +80,7 @@ Producer will not attempt to check docblocks for 0.*, -dev, or -alpha releases. 
 
 ## Releasing
 
-When you `release` the pacakge, Producer will first `validate` it as a pre-flight step.
+When you `release` the package, Producer will first `validate` it as a pre-flight step.
 
 Then it will use the Github or Gitlab API to create a release. In the case of Bitbucket (which does not have an API for releases) it will tag the repository localling.
 
