@@ -69,6 +69,13 @@ interface RepoInterface
 
     /**
      *
+     * Checks that the local status is clean.
+     *
+     */
+    public function checkStatus();
+
+    /**
+     *
      * Checks the various support files.
      *
      */

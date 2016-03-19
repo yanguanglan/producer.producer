@@ -80,6 +80,16 @@ class Hg extends AbstractRepo
             throw new Exception('Push failed.');
         }
 
+        $this->checkStatus();
+    }
+
+    /**
+     *
+     * Checks that the local status is clean.
+     *
+     */
+    public function checkStatus()
+    {
         $this->shell('hg status', $output, $return);
         if ($return || $output) {
             throw new Exception('Status failed.');

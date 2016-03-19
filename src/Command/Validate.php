@@ -62,6 +62,7 @@ class Validate extends AbstractCommand
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->checkTests();
+        $this->repo->checkStatus();
         $this->checkDocblocks();
         $this->checkChanges();
         $this->checkIssues();
