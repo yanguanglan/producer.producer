@@ -206,6 +206,16 @@ class Fsio
         throw new Exception($error['message']);
     }
 
+    /**
+     *
+     * Gets the system temporary directory, with an optional subdirectory;
+     * creates the subdirectory if needed.
+     *
+     * @param string $sub The temporary subdirectory.
+     *
+     * @return string The path to the temporary directory.
+     *
+     */
     public function sysTempDir($sub = null)
     {
         $sub = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $sub);
@@ -218,7 +228,7 @@ class Fsio
         }
 
         $level = error_reporting(0);
-        $result = mkdir($dir, $mode, $deep);
+        $result = mkdir($dir, 0777, true);
         error_reporting($level);
 
         if ($result !== false) {
