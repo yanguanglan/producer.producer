@@ -301,7 +301,7 @@ abstract class AbstractRepo implements RepoInterface
         // is it in the repo itself?
         $repoBin = "vendor/bin/$bin";
         if ($this->fsio->isFile($repoBin)) {
-            return $this->path($repoBin);
+            return $this->fsio->path($repoBin);
         }
 
         // note that this is in reference to this class directory,
