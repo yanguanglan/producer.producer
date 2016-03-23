@@ -232,7 +232,7 @@ abstract class AbstractRepo implements RepoInterface
     public function checkDocblocks()
     {
         // where to write validation records?
-        $target = $this->fsio->path('/tmp/phpdoc');
+        $target = $this->fsio->sysTempDir('/phpdoc/' . $this->getPackageName());
 
         // remove previous validation records, if any
         $this->shell("rm -rf {$target}");
