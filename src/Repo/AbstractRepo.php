@@ -306,7 +306,8 @@ abstract class AbstractRepo implements RepoInterface
 
         // note that this is in reference to this class directory,
         // not the repository directory. this is to check composer global.
-        $composerBin = dirname(dirname(dirname(__DIR__))) . "/vendor/bin/$bin";
+        $composerBin = dirname(dirname(dirname(dirname(dirname(__DIR__)))))
+            . "/vendor/bin/$bin";
         if (file_exists($composerBin) && is_readable($composerBin)) {
             return $composerBin;
         }
