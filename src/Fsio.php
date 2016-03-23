@@ -190,7 +190,7 @@ class Fsio
      * @param string $deep Create intervening directories?
      *
      */
-     public function mkdir($dir, $mode = 0777, $deep = true)
+    public function mkdir($dir, $mode = 0777, $deep = true)
     {
         $dir = $this->path($dir);
 
@@ -200,6 +200,29 @@ class Fsio
 
         if ($result !== false) {
             return;
+        }
+
+        $error = error_get_last();
+        throw new Exception($error['message']);
+    }
+
+    public function sysTempDir($sub = null)
+    {
+        $sub = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $sub);
+
+        $dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR
+            . ltrim($sub, DIRECTORY_SEPARATOR);
+
+        if (is_dir($dir)) {
+            return $dir;
+        }
+
+        $level = error_reporting(0);
+        $result = mkdir($dir, $mode, $deep);
+        error_reporting($level);
+
+        if ($result !== false) {
+            return $dir;
         }
 
         $error = error_get_last();
