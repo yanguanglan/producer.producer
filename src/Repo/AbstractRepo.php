@@ -241,7 +241,7 @@ abstract class AbstractRepo implements RepoInterface
 
         // validate
         $phpdoc = $this->which('phpdoc');
-        $cmd = "$phdoc -d src/ -t {$target} --force --verbose --template=xml";
+        $cmd = "$phpdoc -d src/ -t {$target} --force --verbose --template=xml";
         $line = $this->shell($cmd, $output, $return);
 
         // get the XML file
