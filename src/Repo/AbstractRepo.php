@@ -207,7 +207,8 @@ abstract class AbstractRepo implements RepoInterface
     public function checkTests()
     {
         $this->shell('composer update');
-        $last = $this->shell('phpunit', $output, $return);
+        $phpunit = $this->which('phpunit');
+        $last = $this->shell($phpunit, $output, $return);
         if ($return) {
             throw new Exception($last);
         }
@@ -232,13 +233,14 @@ abstract class AbstractRepo implements RepoInterface
     public function checkDocblocks()
     {
         // where to write validation records?
-        $target = $this->fsio->path('/tmp/phpdoc');
+        $target = $this->fsio->sysTempDir('/phpdoc/' . $this->getPackage());
 
         // remove previous validation records, if any
         $this->shell("rm -rf {$target}");
 
         // validate
-        $cmd = "phpdoc -d src/ -t {$target} --force --verbose --template=xml";
+        $phpdoc = $this->which('phpdoc');
+        $cmd = "$phdoc -d src/ -t {$target} --force --verbose --template=xml";
         $line = $this->shell($cmd, $output, $return);
 
         // get the XML file
@@ -278,5 +280,37 @@ abstract class AbstractRepo implements RepoInterface
                 throw new Exception('Docblocks do not appear valid.');
             }
         }
+    }
+
+    /**
+     *
+     * Find the closest binary for tools such as phpunit and phpdoc.
+     *
+     * Look first in the repo vendor/bin, then in the producer vendor/bin
+     * (probably a `composer global require producer`), then fall back to the
+     * system bin.
+     *
+     * @param string $bin Which binary to look for.
+     *
+     * @return string The path to the binary.
+     *
+     */
+    protected function which($bin)
+    {
+        // is it in the repo itself?
+        $repoBin = "vendor/bin/$bin";
+        if ($this->fsio->isFile($repoBin)) {
+            return $this->path($repoBin);
+        }
+
+        // note that this is in reference to this class directory,
+        // not the repository directory. this is to check composer global.
+        $composerBin = dirname(dirname(dirname(__DIR__))) . "/vendor/bin/$bin";
+        if (file_exists($composerBin) && is_readable($composerBin)) {
+            return $composerBin;
+        }
+
+        // use a (hopefully) system-available one
+        return $bin;
     }
 }
