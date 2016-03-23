@@ -212,6 +212,7 @@ abstract class AbstractRepo implements RepoInterface
         if ($return) {
             throw new Exception($last);
         }
+        $this->checkStatus();
     }
 
     /**
