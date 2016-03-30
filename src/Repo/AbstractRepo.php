@@ -195,7 +195,7 @@ abstract class AbstractRepo implements RepoInterface
         $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {
-            $this->logger->warning('The LICENSE copyright year looks out-of-date or is a date range.');
+            $this->logger->warning('The LICENSE copyright year (or range of years) looks out-of-date.');
         }
     }
 
