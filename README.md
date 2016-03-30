@@ -1,16 +1,40 @@
 # Producer
 
-Producer is a command-line tool to validate, and then release, your PHP library package. It supports Git and Mercurial for version control, as well as Github, Gitlab, and Bitbucket for remote origins.
+Producer is a command-line quality-assurance tool to validate, and then release, your PHP library package. It supports Git and Mercurial for version control, as well as Github, Gitlab, and Bitbucket for remote origins.
 
 ## Installing
 
-Producer works in concert with [Composer](https://getcomposer.org). Install it first.
+Producer works in concert with [Composer][], [PHPUnit][], and [PHPDocumentor][]. Please install them first, either as part of your global system, or as part of your package.
 
-Then add `$COMPOSER_HOME/vendor/bin` to your `$PATH` ([instuctions here](https://getcomposer.org/doc/03-cli.md#global)).
+[Composer]: https://getcomposer.org
+[PHPUnit]: https://packagist.org/packages/phpunit/phpunit
+[PHPDocumentor]: https://packagist.org/packages/phpdocumentor/phpdocumentor
 
-Finally, issue `composer global require producer/producer ~1.0` to install Producer.
+### Global Install
 
-To test the installation, issue `producer` at the command line to see some "help" output.
+To install Producer globally, issue `composer global require producer/producer ~1.0`.
+
+Be sure to add `$COMPOSER_HOME/vendor/bin` to your `$PATH`; [instuctions here](https://getcomposer.org/doc/03-cli.md#global).
+
+Test the installation by issuing `producer` at the command line to see some "help" output.
+
+> Remember, you will need [PHPUnit][] and [PHPDocumentor][] as well.
+
+### Package Install
+
+To install Producer package as a development requirement for your package, add the following lines to your `composer.json`:
+
+```
+"require-dev": {
+    "producer/producer": "~1.0"
+}
+```
+
+Issue `composer install` or `composer update` to complete the installation.
+
+Test the installation by issuing `./vendor/bin/producer` at the command line to see some "help" output.
+
+> Remember, you will need [PHPUnit][] and [PHPDocumentor][] as well.
 
 ## Configuring
 
