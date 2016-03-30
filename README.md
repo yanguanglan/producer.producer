@@ -12,7 +12,7 @@ Producer works in concert with [Composer][], [PHPUnit][], and [PHPDocumentor][].
 
 ### Global Install
 
-To install Producer globally, issue `composer global require producer/producer ~1.0`.
+To install Producer globally, issue `composer global require producer/producer ~2.0`.
 
 Be sure to add `$COMPOSER_HOME/vendor/bin` to your `$PATH`; [instuctions here](https://getcomposer.org/doc/03-cli.md#global).
 
@@ -26,7 +26,7 @@ To install Producer package as a development requirement for your package, add t
 
 ```
 "require-dev": {
-    "producer/producer": "~1.0"
+    "producer/producer": "~2.0"
 }
 ```
 
