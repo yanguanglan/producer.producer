@@ -168,13 +168,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkSupportFiles()
     {
-        $files = [
-            'CHANGES',
-            'CONTRIBUTING',
-            'LICENSE',
-            'README',
-        ];
-        foreach ($files as $file) {
+        foreach ($this->producerConfig->get('markdown_files') as $file) {
             $found = $this->fsio->isFile($file, "{$file}.md");
             if (! $found) {
                 throw new Exception("{$file} file is missing.");
@@ -183,11 +177,8 @@ abstract class AbstractRepo implements RepoInterface
                 throw new Exception("{$found} file is empty.");
             }
         }
-
-        $files = [
-            'phpunit.xml.dist',
-        ];
-        foreach ($files as $file) {
+        
+        foreach ($this->producerConfig->get('required_files') as $file) {
             if (! $this->fsio->isFile($file)) {
                 throw new Exception("{$file} file is missing.");
             }
@@ -204,7 +195,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkLicenseYear()
     {
-        $file = $this->fsio->isFile('LICENSE', 'LICENSE.md');
+        $file = call_user_func_array([$this->fsio, 'isFile'], $this->producerConfig->get('license_file'));
         $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {

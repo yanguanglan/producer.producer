@@ -19,12 +19,36 @@ class Config
 {
     /**
      *
-     * The config values.
+     * The config values with defaults.
      *
      * @var array
      *
      */
-    protected $data = [];
+    protected $data = [
+        'markdown_files' => [
+            'CHANGES',
+            'CONTRIBUTING',
+            'LICENSE',
+            'README',
+        ],
+
+        'required_files' => [
+            'phpunit.xml.dist',
+        ],
+
+        'license_file' => [
+            'LICENSE', 'LICENSE.md'
+        ]
+    ];
+
+    /**
+     *
+     * Config items that are CSV and need to be arrays
+     *
+     * @var array
+     *
+     */
+    protected $csv_items = ['markdown_files', 'required_files'];
 
     /**
      *
@@ -59,6 +83,7 @@ class Config
     {
         $this->loadGlobalConfig($homefs);
         $this->loadProjectConfig($repofs);
+        $this->parseCsvToArrays();
     }
 
     /**
@@ -77,7 +102,7 @@ class Config
             throw new Exception("Config file {$path} not found.");
         }
 
-        $this->data = $fsio->parseIni($this->global_file);
+        $this->data = array_merge($this->data, $fsio->parseIni($this->global_file));
     }
     
     /**
@@ -93,7 +118,6 @@ class Config
         if ($fsio->isFile($this->project_file)) {
             $config = $fsio->parseIni($this->project_file);
             $this->data = array_merge($this->data, $config);
-        } else {
         }
     }
 
@@ -138,5 +162,19 @@ class Config
     public function getAll()
     {
         return $this->data ?: [];
+    }
+
+    /**
+     *
+     * Parses desired CSV config items into array
+     *
+     */
+    protected function parseCsvToArrays()
+    {
+        foreach ($this->csv_items as $item) {
+            if (is_string($this->data[$item])) {
+                $this->data[$item] = explode(",", trim($this->data[$item]));
+            }
+        }
     }
 }
