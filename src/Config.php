@@ -24,31 +24,7 @@ class Config
      * @var array
      *
      */
-    protected $data = [
-        'markdown_files' => [
-            'CHANGES',
-            'CONTRIBUTING',
-            'LICENSE',
-            'README',
-        ],
-
-        'required_files' => [
-            'phpunit.xml.dist',
-        ],
-
-        'license_file' => [
-            'LICENSE', 'LICENSE.md'
-        ]
-    ];
-
-    /**
-     *
-     * Config items that are CSV and need to be arrays
-     *
-     * @var array
-     *
-     */
-    protected $csv_items = ['markdown_files', 'required_files'];
+    protected $data = [];
 
     /**
      *
@@ -57,7 +33,7 @@ class Config
      * @var string
      *
      */
-    protected $global_file = '.producer/config';
+    protected $global_config_file = '.producer/config';
 
     /**
      *
@@ -66,7 +42,7 @@ class Config
      * @var string
      *
      */
-    protected $project_file = '.producer';
+    protected $package_config_file = '.producer/config';
 
     /**
      *
@@ -82,8 +58,7 @@ class Config
     public function __construct(Fsio $homefs, Fsio $repofs)
     {
         $this->loadGlobalConfig($homefs);
-        $this->loadProjectConfig($repofs);
-        $this->parseCsvToArrays();
+        $this->loadPackageConfig($repofs);
     }
 
     /**
@@ -97,12 +72,12 @@ class Config
      */
     protected function loadGlobalConfig(Fsio $fsio)
     {
-        if (! $fsio->isFile($this->global_file)) {
-            $path = $fsio->path($this->global_file);
+        if (! $fsio->isFile($this->global_config_file)) {
+            $path = $fsio->path($this->global_config_file);
             throw new Exception("Config file {$path} not found.");
         }
 
-        $this->data = array_merge($this->data, $fsio->parseIni($this->global_file));
+        $this->data = array_merge($this->data, $fsio->parseIni($this->global_config_file, true));
     }
     
     /**
@@ -113,10 +88,10 @@ class Config
      * @throws Exception
      *
      */
-    public function loadProjectConfig(Fsio $fsio)
+    public function loadPackageConfig(Fsio $fsio)
     {
-        if ($fsio->isFile($this->project_file)) {
-            $config = $fsio->parseIni($this->project_file);
+        if ($fsio->isFile($this->package_config_file)) {
+            $config = $fsio->parseIni($this->package_config_file, true);
             $this->data = array_merge($this->data, $config);
         }
     }
@@ -136,7 +111,7 @@ class Config
             return $this->data[$key];
         }
 
-        throw new Exception("No value set for '$key' in '{$this->file}'.");
+        throw new Exception("No value set for '$key' in '{$this->global_config_file}' or '{$this->package_config_file}'.");
     }
 
     /**
@@ -162,19 +137,5 @@ class Config
     public function getAll()
     {
         return $this->data ?: [];
-    }
-
-    /**
-     *
-     * Parses desired CSV config items into array
-     *
-     */
-    protected function parseCsvToArrays()
-    {
-        foreach ($this->csv_items as $item) {
-            if (is_string($this->data[$item])) {
-                $this->data[$item] = explode(",", trim($this->data[$item]));
-            }
-        }
     }
 }

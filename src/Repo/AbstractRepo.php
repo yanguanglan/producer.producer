@@ -168,22 +168,14 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkSupportFiles()
     {
-        foreach ($this->producerConfig->get('markdown_files') as $file) {
-            $found = $this->fsio->isFile($file, "{$file}.md");
+        // Files are defined in global configuration, and can be added to in the package configuration
+        foreach ($this->producerConfig->get('files') as $file => $filename) {
+            $found = $this->fsio->isFile($filename);
             if (! $found) {
-                throw new Exception("{$file} file is missing.");
+                throw new Exception("The {$file} file: {$filename} is missing.");
             }
             if (trim($this->fsio->get($found)) === '') {
-                throw new Exception("{$found} file is empty.");
-            }
-        }
-        
-        foreach ($this->producerConfig->get('required_files') as $file) {
-            if (! $this->fsio->isFile($file)) {
-                throw new Exception("{$file} file is missing.");
-            }
-            if (trim($this->fsio->get($found)) === '') {
-                throw new Exception("{$found} file is empty.");
+                throw new Exception("The {$file} file: {$filename} file is empty.");
             }
         }
     }
@@ -195,7 +187,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkLicenseYear()
     {
-        $file = call_user_func_array([$this->fsio, 'isFile'], $this->producerConfig->get('license_file'));
+        $file = $this->fsio->isFile($this->producerConfig->get('files')['license']);
         $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {
@@ -212,12 +204,7 @@ abstract class AbstractRepo implements RepoInterface
     {
         $this->shell('composer update');
 
-        // Issue: #4 - Allow users to define test commands
-        if ($this->producerConfig->has('test_command')) {
-            $command = $this->producerConfig->get('test_command');
-        } else {
-            $command = $this->which('phpunit');
-        }
+        $command = $this->producerConfig->get('commands')['tests'];
 
         $last = $this->shell($command, $output, $return);
         if ($return) {
@@ -233,7 +220,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function getChanges()
     {
-        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
+        $file = $this->fsio->isFile($this->producerConfig->get('files')['changes']);
         return $this->fsio->get($file);
     }
 
@@ -251,9 +238,12 @@ abstract class AbstractRepo implements RepoInterface
         $this->shell("rm -rf {$target}");
 
         // validate
-        $phpdoc = $this->which('phpdoc');
-        $cmd = "$phpdoc -d src/ -t {$target} --force --verbose --template=xml";
-        $line = $this->shell($cmd, $output, $return);
+        $command = $this->producerConfig->get('commands')['docs'];
+
+        // {$target} is an allowed, user defined variable
+        $command = str_replace('{$target}', $target, $command);
+
+        $line = $this->shell($command, $output, $return);
 
         // get the XML file
         $xml = simplexml_load_file("{$target}/structure.xml");
@@ -292,30 +282,5 @@ abstract class AbstractRepo implements RepoInterface
                 throw new Exception('Docblocks do not appear valid.');
             }
         }
-    }
-
-    /**
-     *
-     * Find the closest binary for tools such as phpunit and phpdoc.
-     *
-     * Look first in the repo vendor/bin, then in the producer vendor/bin
-     * (probably a `composer global require producer`), then fall back to the
-     * system bin.
-     *
-     * @param string $bin Which binary to look for.
-     *
-     * @return string The path to the binary.
-     *
-     */
-    protected function which($bin)
-    {
-        // is it in the repo itself?
-        $repoBin = "vendor/bin/$bin";
-        if ($this->fsio->isFile($repoBin)) {
-            return $this->fsio->path($repoBin);
-        }
-
-        // use a system-wide bin
-        return $bin;
     }
 }
