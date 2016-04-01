@@ -37,10 +37,10 @@ class Git extends AbstractRepo
      */
     public function getOrigin()
     {
-        if (! isset($this->configData['remote origin']['url'])) {
+        if (! isset($this->vcsConfig['remote origin']['url'])) {
             throw new Exception('Could not determine remote origin.');
         }
-        return $this->configData['remote origin']['url'];
+        return $this->vcsConfig['remote origin']['url'];
     }
 
     /**

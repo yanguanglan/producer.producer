@@ -8,6 +8,7 @@
  */
 namespace Producer\Repo;
 
+use Producer\Config;
 use Producer\Exception;
 use Producer\Fsio;
 use Psr\Log\LoggerInterface;
@@ -37,7 +38,7 @@ abstract class AbstractRepo implements RepoInterface
      * @var array
      *
      */
-    protected $configData = [];
+    protected $vcsConfig = [];
 
     /**
      *
@@ -68,18 +69,30 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
+     * Global and project configuration.
+     *
+     * @var Config
+     *
+     */
+    protected $producerConfig;
+
+    /**
+     *
      * Constructor.
      *
      * @param Fsio $fsio A filesystem I/O object.
      *
      * @param LoggerInterface $logger A logger.
      *
+     * @param Config $config
+     *
      */
-    public function __construct(Fsio $fsio, LoggerInterface $logger)
+    public function __construct(Fsio $fsio, LoggerInterface $logger, Config $config)
     {
         $this->fsio = $fsio;
         $this->logger = $logger;
-        $this->configData = $this->fsio->parseIni($this->configFile, true);
+        $this->vcsConfig = $this->fsio->parseIni($this->configFile, true);
+        $this->producerConfig = $config;
     }
 
     /**

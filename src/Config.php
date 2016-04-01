@@ -28,28 +28,73 @@ class Config
 
     /**
      *
-     * The name of the Producer config file.
+     * The name of the global Producer config file.
      *
      * @var string
      *
      */
-    protected $file = '.producer/config';
+    protected $global_file = '.producer/config';
+
+    /**
+     *
+     * The name of the project's config file
+     *
+     * @var string
+     *
+     */
+    protected $project_file = '.producer';
 
     /**
      *
      * Constructor.
      *
-     * @param Fsio $fsio A filesystem I/O object.
+     * @param Fsio $homefs
+     *
+     * @param Fsio $repofs
+     *
+     * @throws Exception
      *
      */
-    public function __construct(Fsio $fsio)
+    public function __construct(Fsio $homefs, Fsio $repofs)
     {
-        if (! $fsio->isFile($this->file)) {
-            $path = $fsio->path($this->file);
+        $this->loadGlobalConfig($homefs);
+        $this->loadProjectConfig($repofs);
+    }
+
+    /**
+     * 
+     * Load's Producer's global config file
+     * 
+     * @param Fsio $fsio
+     *
+     * @throws Exception
+     *
+     */
+    protected function loadGlobalConfig(Fsio $fsio)
+    {
+        if (! $fsio->isFile($this->global_file)) {
+            $path = $fsio->path($this->global_file);
             throw new Exception("Config file {$path} not found.");
         }
 
-        $this->data = $fsio->parseIni($this->file);
+        $this->data = $fsio->parseIni($this->global_file);
+    }
+    
+    /**
+     * Loads the project's config file, if it exists
+     * 
+     * @param Fsio $fsio
+     *
+     * @throws Exception
+     *
+     */
+    public function loadProjectConfig(Fsio $fsio)
+    {
+        if ($fsio->isFile($this->project_file)) {
+            $config = $fsio->parseIni($this->project_file);
+            $this->data = array_merge($this->data, $config);
+        } else {
+        }
     }
 
     /**
@@ -68,5 +113,30 @@ class Config
         }
 
         throw new Exception("No value set for '$key' in '{$this->file}'.");
+    }
+
+    /**
+     *
+     * Confirm that a config value is set
+     *
+     * @param $key
+     *
+     * @return bool
+     *
+     */
+    public function has($key) {
+        return (isset($this->data[$key]));
+    }
+
+    /**
+     *
+     * Return all configuration data
+     *
+     * @return array
+     *
+     */
+    public function getAll()
+    {
+        return $this->data ?: [];
     }
 }

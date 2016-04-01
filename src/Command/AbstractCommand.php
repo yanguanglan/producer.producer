@@ -9,6 +9,7 @@
 namespace Producer\Command;
 
 use Producer\Api\ApiInterface;
+use Producer\Config;
 use Producer\Repo\RepoInterface;
 use Psr\Log\LoggerInterface;
 
@@ -50,6 +51,15 @@ abstract class AbstractCommand implements CommandInterface
 
     /**
      *
+     * The producer configuration
+     * 
+     * @var Config
+     *
+     */
+    protected $config;
+
+    /**
+     *
      * Constructor.
      *
      * @param LoggerInterface $logger The logger.
@@ -57,16 +67,20 @@ abstract class AbstractCommand implements CommandInterface
      * @param RepoInterface $repo The local repository.
      *
      * @param ApiInterface $api The remote API.
-     *
+     * 
+     * @param Config $config The global and project configuration.
+     * 
      */
     public function __construct(
         LoggerInterface $logger,
         RepoInterface $repo,
-        ApiInterface $api
+        ApiInterface $api,
+        Config $config
     ) {
         $this->logger = $logger;
         $this->repo = $repo;
         $this->api = $api;
+        $this->config = $config;
     }
 
     /**
