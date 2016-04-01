@@ -220,8 +220,15 @@ abstract class AbstractRepo implements RepoInterface
     public function checkTests()
     {
         $this->shell('composer update');
-        $phpunit = $this->which('phpunit');
-        $last = $this->shell($phpunit, $output, $return);
+
+        // Issue: #4 - Allow users to define test commands
+        if ($this->producerConfig->has('test_command')) {
+            $command = $this->producerConfig->get('test_command');
+        } else {
+            $command = $this->which('phpunit');
+        }
+
+        $last = $this->shell($command, $output, $return);
         if ($return) {
             throw new Exception($last);
         }
