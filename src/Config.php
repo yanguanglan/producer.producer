@@ -77,7 +77,7 @@ class Config
             throw new Exception("Config file {$path} not found.");
         }
 
-        $this->data = array_merge($this->data, $fsio->parseIni($this->global_config_file, true));
+        $this->data = $fsio->parseIni($this->global_config_file, true);
     }
     
     /**
@@ -92,7 +92,8 @@ class Config
     {
         if ($fsio->isFile($this->package_config_file)) {
             $config = $fsio->parseIni($this->package_config_file, true);
-            $this->data = array_merge($this->data, $config);
+            $this->data = array_replace_recursive($this->data, $config);
+            echo "here";
         }
     }
 
