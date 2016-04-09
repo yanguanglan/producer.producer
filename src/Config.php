@@ -40,7 +40,7 @@ class Config
         'files' => [
             'changes' => 'CHANGES.md',
             'contributing' => 'CONTRIBUTING.md',
-            'license' => 'LICENSE',
+            'license' => 'LICENSE.md',
             'phpunit' => 'phpunit.xml.dist',
             'readme' => 'README.MD',
         ],
