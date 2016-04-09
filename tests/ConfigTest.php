@@ -3,7 +3,7 @@ namespace Producer;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
-    protected function makeFsio(array $returnData, $isFile = true)
+    protected function mockFsio(array $returnData, $isFile = true)
     {
         $fsio = $this->getMockBuilder(Fsio::class)
             ->disableOriginalConstructor()
@@ -19,53 +19,80 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         return $fsio;
     }
 
-    /* Tests */
-    public function test_it_does_not_load_a_missing_project_config_file()
+    public function testLoadHomeConfig()
     {
-        $home = $this->makeFsio(['one' => 1, 'two' => ['a' => 'a', 'b' => 'b']]);
-        $repo = $this->makeFsio([], false);
-
-        $config = new Config($home, $repo);
-
-        $this->assertEquals([
-            'one' => 1,
-            'two' => [
-                'a' => 'a',
-                'b' => 'b'
+        $homefs = $this->mockFsio([
+            'gitlab_token' => 'foobarbazdibzimgir',
+            'commands' => [
+                'phpunit' => '/path/to/phpunit',
             ]
-        ], $config->getAll(), "failed to append project configuration");
-    }
+        ]);
+        $repofs = $this->mockFsio([], false);
 
-    public function test_it_appends_project_config_items()
-    {
-        $home = $this->makeFsio(['one' => 1, 'two' => ['a' => 'a']]);
-        $repo = $this->makeFsio(['three' => 3, 'two' => ['b' => 'b']]);
+        $config = new Config($homefs, $repofs);
 
-        $config = new Config($home, $repo);
-        
-        $this->assertEquals([
-            'one' => 1,
-            'two' => [
-                'a' => 'a',
-                'b' => 'b'
+        $expect = [
+            'bitbucket_password' => null,
+            'bitbucket_username' => null,
+            'github_token' => null,
+            'github_username' => null,
+            'gitlab_token' => 'foobarbazdibzimgir',
+            'package' => null,
+            'commands' => [
+                'phpdoc' => 'phpdoc',
+                'phpunit' => '/path/to/phpunit',
             ],
-            'three' => 3,
-        ], $config->getAll(), "failed to append project configuration");
-    }
-
-    public function test_it_overwrites_global_config()
-    {
-        $home = $this->makeFsio(['one' => 1, 'two' => ['a' => 'a']]);
-        $repo = $this->makeFsio(['one' => 'one', 'two' => ['a' => 'b']]);
-
-        $config = new Config($home, $repo);
+            'files' => [
+                'changes' => 'CHANGES.md',
+                'contributing' => 'CONTRIBUTING.md',
+                'license' => 'LICENSE.md',
+                'phpunit' => 'phpunit.xml.dist',
+                'readme' => 'README.md',
+            ],
+        ];
 
         $actual = $config->getAll();
 
-        $this->assertEquals([
-            'one' => 'one',
-            'two' => ['a' => 'b'],
-        ], $actual, "failed to overwrite project configuration");
+        $this->assertSame($expect, $actual);
+    }
+
+    public function testLoadHomeAndRepoConfig()
+    {
+        $homefs = $this->mockFsio(['gitlab_token' => 'foobarbazdibzimgir']);
+        $repofs = $this->mockFsio([
+            'package' => 'Foo.Bar',
+            'commands' => [
+                'phpunit' => './vendor/bin/phpunit'
+            ],
+            'files' => [
+                'contributing' => '.github/CONTRIBUTING'
+            ],
+        ]);
+
+        $config = new Config($homefs, $repofs);
+
+        $expect = [
+            'bitbucket_password' => null,
+            'bitbucket_username' => null,
+            'github_token' => null,
+            'github_username' => null,
+            'gitlab_token' => 'foobarbazdibzimgir',
+            'package' => 'Foo.Bar',
+            'commands' => [
+                'phpdoc' => 'phpdoc',
+                'phpunit' => './vendor/bin/phpunit',
+            ],
+            'files' => [
+                'changes' => 'CHANGES.md',
+                'contributing' => '.github/CONTRIBUTING',
+                'license' => 'LICENSE.md',
+                'phpunit' => 'phpunit.xml.dist',
+                'readme' => 'README.md',
+            ],
+        ];
+
+        $actual = $config->getAll();
+
+        $this->assertSame($expect, $actual);
     }
 }
-
