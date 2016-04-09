@@ -30,7 +30,7 @@ class Config
         'github_token' => null,
         'github_username' => null,
         'gitlab_token' => null,
-        'package' => null,
+        'package' => '',
         'commands' => [
             'phpdoc' => 'phpdoc',
             'phpunit' => 'phpunit',
