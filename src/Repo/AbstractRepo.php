@@ -247,7 +247,7 @@ abstract class AbstractRepo implements RepoInterface
         // what is the expected @package name?
         $composer = $this->getComposer();
         $expectPackage = $composer->name;
-        $customPackage = $this->config->get('package');
+        $customPackage = $this->producerConfig->get('package');
         if ($customPackage) {
             $expectPackage = $customPackage;
         }
