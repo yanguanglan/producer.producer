@@ -142,22 +142,22 @@ class Validate extends AbstractCommand
      */
     protected function checkChanges()
     {
-        $this->logger->info('Checking if CHANGES up to date.');
+        $this->logger->info('Checking if changes are up to date.');
 
         $lastChangelog = $this->repo->getChangesDate();
-        $this->logger->info("CHANGES date is $lastChangelog.");
+        $this->logger->info("Last changes date is $lastChangelog.");
 
         $lastCommit = $this->repo->getLastCommitDate();
         $this->logger->info("Last commit date is $lastCommit.");
 
         if ($lastChangelog == $lastCommit) {
-            $this->logger->info('CHANGES appears up to date.');
+            $this->logger->info('Changes appear up to date.');
             return;
         }
 
-        $this->logger->error('CHANGES appears out of date.');
+        $this->logger->error('Changes appear out of date.');
         $this->repo->logSinceDate($lastChangelog);
-        throw new Exception('Please update and commit the CHANGES.');
+        throw new Exception('Please update and commit the changes.');
     }
 
     /**
