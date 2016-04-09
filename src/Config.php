@@ -24,77 +24,91 @@ class Config
      * @var array
      *
      */
-    protected $data = [];
+    protected $data = [
+        'bitbucket_password' => null,
+        'bitbucket_username' => null,
+        'github_token' => null,
+        'github_username' => null,
+        'gitlab_token' => null,
+        'package' => [
+            'name' => null,
+        ],
+        'commands' => [
+            'phpdoc' => 'phpdoc',
+            'phpunit' => 'phpunit',
+        ],
+        'files' => [
+            'changes' => 'CHANGES.md',
+            'contributing' => 'CONTRIBUTING.md',
+            'license' => 'LICENSE',
+            'phpunit' => 'phpunit.xml.dist',
+            'readme' => 'README.MD',
+        ],
+    ];
 
     /**
      *
-     * The name of the global Producer config file.
+     * The name of the Producer config file, wherever located.
      *
      * @var string
      *
      */
-    protected $global_config_file = '.producer/config';
-
-    /**
-     *
-     * The name of the project's config file
-     *
-     * @var string
-     *
-     */
-    protected $package_config_file = '.producer/config';
+    protected $configFile = '.producer/config';
 
     /**
      *
      * Constructor.
      *
-     * @param Fsio $homefs
+     * @param Fsio $homefs The user's home directory filesystem.
      *
-     * @param Fsio $repofs
+     * @param Fsio $repofs The package repository filesystem.
      *
      * @throws Exception
      *
      */
     public function __construct(Fsio $homefs, Fsio $repofs)
     {
-        $this->loadGlobalConfig($homefs);
-        $this->loadPackageConfig($repofs);
+        $this->loadHomeConfig($homefs);
+        $this->loadRepoConfig($repofs);
     }
 
     /**
-     * 
-     * Load's Producer's global config file
-     * 
-     * @param Fsio $fsio
+     *
+     * Loads the user's home directory Producer config file.
+     *
+     * @param Fsio $homefs
      *
      * @throws Exception
      *
      */
-    protected function loadGlobalConfig(Fsio $fsio)
+    protected function loadHomeConfig(Fsio $homefs)
     {
-        if (! $fsio->isFile($this->global_config_file)) {
-            $path = $fsio->path($this->global_config_file);
+        if (! $homefs->isFile($this->configFile)) {
+            $path = $homefs->path($this->configFile);
             throw new Exception("Config file {$path} not found.");
         }
 
-        $this->data = $fsio->parseIni($this->global_config_file, true);
+        $config = $homefs->parseIni($this->configFile, true);
+        $this->data = array_replace_recursive($this->data, $config);
     }
-    
+
     /**
-     * Loads the project's config file, if it exists
-     * 
+     *
+     * Loads the project's config file, if it exists.
+     *
      * @param Fsio $fsio
      *
      * @throws Exception
      *
      */
-    public function loadPackageConfig(Fsio $fsio)
+    public function loadRepoConfig(Fsio $repofs)
     {
-        if ($fsio->isFile($this->package_config_file)) {
-            $config = $fsio->parseIni($this->package_config_file, true);
-            $this->data = array_replace_recursive($this->data, $config);
-            echo "here";
+        if (! $repofs->isFile($this->configFile)) {
+            return;
         }
+
+        $config = $repofs->parseIni($this->configFile, true);
+        $this->data = array_replace_recursive($this->data, $config);
     }
 
     /**
@@ -112,7 +126,7 @@ class Config
             return $this->data[$key];
         }
 
-        throw new Exception("No value set for '$key' in '{$this->global_config_file}' or '{$this->package_config_file}'.");
+        throw new Exception("No config value set for '$key'.");
     }
 
     /**
@@ -137,6 +151,6 @@ class Config
      */
     public function getAll()
     {
-        return $this->data ?: [];
+        return $this->data;
     }
 }

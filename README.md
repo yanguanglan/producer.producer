@@ -50,20 +50,7 @@ github_token =
 gitlab_token =
 ; Bitbucket
 bitbucket_username =
-bitbucket_password =
-
-[commands]
-; the command to use for running tests, defaults to global install
-tests = phpunit
-; the command to use for generating docs, defaults to global install
-docs = phpdoc -d src/ -t {$target} --force --verbose --template=xml
-
-[files]
-changes = CHANGES.md
-license = LICENSE.md
-tests = phpunit.xml.dist
-readme = README.MD
-contributing = CONTRIBUTING.md" > ~/.producer/config
+bitbucket_password =" > ~/.producer/config
 ```
 
 You can then edit `~/.producer/config` to enter your access credentials, any or all of:
@@ -76,9 +63,26 @@ You can then edit `~/.producer/config` to enter your access credentials, any or 
 
 ### Package Configuration
 
-Inside your package, you may define a `.producer/config` file that overrides any of these options for that specific package.
-You may also add to the `[files]` list to ensure other files are present and not empty. Lastly, not that
-in the `docs` command, you may use `{$target}` to note the output path for that command.
+Inside your package repository, you may define a `.producer/config` file that overrides any of these options for that specific package. You may also add these additional directives:
+
+```
+; custom @package docblock value
+package = Custom.Name
+
+[commands]
+; the command to use for running tests, defaults to global install
+phpunit = /path/to/phpunit
+; the command to use for generating docs, defaults to global install
+phpdoc = /path/to/phpdoc
+
+[files]
+changes = CHANGES.md
+license = LICENSE.md
+phpunit = phpunit.xml.dist
+readme = README.MD
+contributing = CONTRIBUTING.md
+```
+
 
 ## Getting Started
 

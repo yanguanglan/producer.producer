@@ -168,14 +168,13 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkSupportFiles()
     {
-        // Files are defined in global configuration, and can be added to in the package configuration
-        foreach ($this->producerConfig->get('files') as $file => $filename) {
-            $found = $this->fsio->isFile($filename);
+        foreach ($this->producerConfig->get('files') as $file) {
+            $found = $this->fsio->isFile($file);
             if (! $found) {
-                throw new Exception("The {$file} file: {$filename} is missing.");
+                throw new Exception("The file {$file} is missing.");
             }
             if (trim($this->fsio->get($found)) === '') {
-                throw new Exception("The {$file} file: {$filename} file is empty.");
+                throw new Exception("The file {$file} is empty.");
             }
         }
     }
@@ -204,7 +203,7 @@ abstract class AbstractRepo implements RepoInterface
     {
         $this->shell('composer update');
 
-        $command = $this->producerConfig->get('commands')['tests'];
+        $command = $this->producerConfig->get('commands')['phpunit'];
 
         $last = $this->shell($command, $output, $return);
         if ($return) {
@@ -238,30 +237,31 @@ abstract class AbstractRepo implements RepoInterface
         $this->shell("rm -rf {$target}");
 
         // validate
-        $command = $this->producerConfig->get('commands')['docs'];
-
-        // {$target} is an allowed, user defined variable
-        $command = str_replace('{$target}', $target, $command);
-
+        $phpdoc = $this->producerConfig->get('commands')['phpdoc'];
+        $command = "{$phpdoc} -d src/ -t {$target} --force --verbose --template=xml";
         $line = $this->shell($command, $output, $return);
 
         // get the XML file
         $xml = simplexml_load_file("{$target}/structure.xml");
 
-        // are there missing @package tags?
+        // what is the expected @package name?
+        $composer = $this->getComposer();
+        $expectPackage = $composer->name;
+        $customPackage = $this->config->get('package');
+        if ($customPackage) {
+            $expectPackage = $customPackage;
+        }
+
+        // are there missing or misvalued @package tags?
         $missing = false;
         foreach ($xml->file as $file) {
-
-            // get the expected package name
-            $class = $file->class->full_name . $file->interface->full_name;
-
             // class-level tag (don't care about file-level)
-            $package = $file->class['package'] . $file->interface['package'];
-            $composer = $this->getComposer();
-            if ($package && $package != $composer->name) {
+            $actualPackage = $file->class['package'] . $file->interface['package'];
+            if ($actualPackage != $expectPackage) {
                 $missing = true;
-                $message = "  Expected class-level @package {$composer->name}, "
-                    . "actual @package {$package}, "
+                $class = $file->class->full_name . $file->interface->full_name;
+                $message = "  Expected class-level @package {$expectPackage}, "
+                    . "actual value '{$actualPackage}', "
                     . "in class {$class}";
                 $this->logger->error($message);
             }
