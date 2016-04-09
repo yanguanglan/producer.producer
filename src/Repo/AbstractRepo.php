@@ -8,6 +8,7 @@
  */
 namespace Producer\Repo;
 
+use Producer\Config;
 use Producer\Exception;
 use Producer\Fsio;
 use Psr\Log\LoggerInterface;
@@ -37,7 +38,7 @@ abstract class AbstractRepo implements RepoInterface
      * @var array
      *
      */
-    protected $configData = [];
+    protected $vcsConfig = [];
 
     /**
      *
@@ -68,18 +69,30 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
+     * Global and project configuration.
+     *
+     * @var Config
+     *
+     */
+    protected $producerConfig;
+
+    /**
+     *
      * Constructor.
      *
      * @param Fsio $fsio A filesystem I/O object.
      *
      * @param LoggerInterface $logger A logger.
      *
+     * @param Config $config
+     *
      */
-    public function __construct(Fsio $fsio, LoggerInterface $logger)
+    public function __construct(Fsio $fsio, LoggerInterface $logger, Config $config)
     {
         $this->fsio = $fsio;
         $this->logger = $logger;
-        $this->configData = $this->fsio->parseIni($this->configFile, true);
+        $this->vcsConfig = $this->fsio->parseIni($this->configFile, true);
+        $this->producerConfig = $config;
     }
 
     /**
@@ -155,31 +168,14 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkSupportFiles()
     {
-        $files = [
-            'CHANGES',
-            'CONTRIBUTING',
-            'LICENSE',
-            'README',
-        ];
-        foreach ($files as $file) {
-            $found = $this->fsio->isFile($file, "{$file}.md");
+        // Files are defined in global configuration, and can be added to in the package configuration
+        foreach ($this->producerConfig->get('files') as $file => $filename) {
+            $found = $this->fsio->isFile($filename);
             if (! $found) {
-                throw new Exception("{$file} file is missing.");
+                throw new Exception("The {$file} file: {$filename} is missing.");
             }
             if (trim($this->fsio->get($found)) === '') {
-                throw new Exception("{$found} file is empty.");
-            }
-        }
-
-        $files = [
-            'phpunit.xml.dist',
-        ];
-        foreach ($files as $file) {
-            if (! $this->fsio->isFile($file)) {
-                throw new Exception("{$file} file is missing.");
-            }
-            if (trim($this->fsio->get($found)) === '') {
-                throw new Exception("{$found} file is empty.");
+                throw new Exception("The {$file} file: {$filename} file is empty.");
             }
         }
     }
@@ -191,7 +187,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkLicenseYear()
     {
-        $file = $this->fsio->isFile('LICENSE', 'LICENSE.md');
+        $file = $this->fsio->isFile($this->producerConfig->get('files')['license']);
         $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {
@@ -207,8 +203,10 @@ abstract class AbstractRepo implements RepoInterface
     public function checkTests()
     {
         $this->shell('composer update');
-        $phpunit = $this->which('phpunit');
-        $last = $this->shell($phpunit, $output, $return);
+
+        $command = $this->producerConfig->get('commands')['tests'];
+
+        $last = $this->shell($command, $output, $return);
         if ($return) {
             throw new Exception($last);
         }
@@ -222,7 +220,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function getChanges()
     {
-        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
+        $file = $this->fsio->isFile($this->producerConfig->get('files')['changes']);
         return $this->fsio->get($file);
     }
 
@@ -240,9 +238,12 @@ abstract class AbstractRepo implements RepoInterface
         $this->shell("rm -rf {$target}");
 
         // validate
-        $phpdoc = $this->which('phpdoc');
-        $cmd = "$phpdoc -d src/ -t {$target} --force --verbose --template=xml";
-        $line = $this->shell($cmd, $output, $return);
+        $command = $this->producerConfig->get('commands')['docs'];
+
+        // {$target} is an allowed, user defined variable
+        $command = str_replace('{$target}', $target, $command);
+
+        $line = $this->shell($command, $output, $return);
 
         // get the XML file
         $xml = simplexml_load_file("{$target}/structure.xml");
@@ -281,30 +282,5 @@ abstract class AbstractRepo implements RepoInterface
                 throw new Exception('Docblocks do not appear valid.');
             }
         }
-    }
-
-    /**
-     *
-     * Find the closest binary for tools such as phpunit and phpdoc.
-     *
-     * Look first in the repo vendor/bin, then in the producer vendor/bin
-     * (probably a `composer global require producer`), then fall back to the
-     * system bin.
-     *
-     * @param string $bin Which binary to look for.
-     *
-     * @return string The path to the binary.
-     *
-     */
-    protected function which($bin)
-    {
-        // is it in the repo itself?
-        $repoBin = "vendor/bin/$bin";
-        if ($this->fsio->isFile($repoBin)) {
-            return $this->fsio->path($repoBin);
-        }
-
-        // use a system-wide bin
-        return $bin;
     }
 }

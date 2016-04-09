@@ -39,10 +39,10 @@ class Hg extends AbstractRepo
      */
     public function getOrigin()
     {
-        if (! isset($this->configData['paths']['default'])) {
+        if (! isset($this->vcsConfig['paths']['default'])) {
             throw new Exception('Could not determine default path.');
         }
-        return $this->configData['paths']['default'];
+        return $this->vcsConfig['paths']['default'];
     }
 
     /**
