@@ -37,7 +37,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'github_token' => null,
             'github_username' => null,
             'gitlab_token' => 'foobarbazdibzimgir',
-            'package' => null,
+            'package' => '',
             'commands' => [
                 'phpdoc' => 'phpdoc',
                 'phpunit' => '/path/to/phpunit',
