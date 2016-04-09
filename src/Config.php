@@ -42,7 +42,7 @@ class Config
             'contributing' => 'CONTRIBUTING.md',
             'license' => 'LICENSE.md',
             'phpunit' => 'phpunit.xml.dist',
-            'readme' => 'README.MD',
+            'readme' => 'README.md',
         ],
     ];
 
