@@ -155,6 +155,13 @@ class Fsio
         return file_exists($path) && is_readable($path);
     }
 
+    /**
+     *
+     * Deletes a file, if it exists.
+     *
+     * @return mixed
+     *
+     */
     public function unlink($file)
     {
         if ($this->isFile($file)) {
@@ -204,6 +211,13 @@ class Fsio
         throw new Exception($error['message']);
     }
 
+    /**
+     *
+     * Removes a directory, if it exists.
+     *
+     * @return mixed
+     *
+     */
     public function rmdir($dir)
     {
         if ($this->isDir($dir)) {
