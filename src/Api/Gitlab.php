@@ -65,7 +65,7 @@ class Gitlab extends AbstractApi
 
     protected function httpQuery(array $query)
     {
-        $query = ['private_token' => $this->token];
+        $query['private_token'] = $this->token;
         return $query;
     }
 
