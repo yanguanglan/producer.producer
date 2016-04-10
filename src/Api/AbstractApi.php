@@ -93,9 +93,11 @@ abstract class AbstractApi implements ApiInterface
      *
      * Makes one HTTP POST call and returns the results.
      *
-     * @param string $path GET from this path.
+     * @param string $path POST to this path.
      *
      * @param array $query Query params.
+     *
+     * @param array $data Data to be JSON-encoded as the HTTP message body.
      *
      * @return mixed
      *
