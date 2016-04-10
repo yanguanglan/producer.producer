@@ -129,9 +129,9 @@ class ProducerContainer
      * Returns a new Config object.
      *
      * @param Fsio $homefs
-     * 
+     *
      * @param Fsio $repofs
-     * 
+     *
      * @return Config
      *
      */
@@ -149,7 +149,7 @@ class ProducerContainer
      * @param Config $config Global and project configuration.
      *
      * @return RepoInterface
-     * 
+     *
      */
     protected function newRepo($fsio, Config $config)
     {
