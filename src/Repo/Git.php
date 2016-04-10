@@ -94,12 +94,11 @@ class Git extends AbstractRepo
     public function getChangesDate()
     {
         $changes = $this->config->get('files')['changes'];
-        $file = $this->fsio->isFile($changes);
-        if (! $file) {
+        if (! $this->fsio->isFile($changes)) {
             throw new Exception("File '{$changes}' is missing.");
         }
 
-        $this->shell("git log -1 {$file}", $output, $return);
+        $this->shell("git log -1 {$changes}", $output, $return);
         return $this->findDate($output);
     }
 

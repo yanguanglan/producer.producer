@@ -146,17 +146,20 @@ class Fsio
      *
      * @param string $file The file to check.
      *
-     * @return string The name of the found file.
+     * @return bool
      *
      */
     public function isFile($file)
     {
         $path = $this->path($file);
-        if (file_exists($path) && is_readable($path)) {
-            return $file;
-        }
+        return file_exists($path) && is_readable($path);
+    }
 
-        return '';
+    public function unlink($file)
+    {
+        if ($this->isFile($file)) {
+            return unlink($this->path($file));
+        }
     }
 
     /**
@@ -199,6 +202,13 @@ class Fsio
 
         $error = error_get_last();
         throw new Exception($error['message']);
+    }
+
+    public function rmdir($dir)
+    {
+        if ($this->isDir($dir)) {
+            return rmdir($this->path($dir));
+        }
     }
 
     /**

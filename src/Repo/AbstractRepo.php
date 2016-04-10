@@ -180,8 +180,7 @@ abstract class AbstractRepo implements RepoInterface
     public function checkSupportFiles()
     {
         foreach ($this->config->get('files') as $file) {
-            $found = $this->fsio->isFile($file);
-            if (! $found) {
+            if (! $this->fsio->isFile($file)) {
                 throw new Exception("The file {$file} is missing.");
             }
             if (trim($this->fsio->get($found)) === '') {
@@ -197,8 +196,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkLicenseYear()
     {
-        $file = $this->fsio->isFile($this->config->get('files')['license']);
-        $license = $this->fsio->get($file);
+        $license = $this->fsio->get($this->config->get('files')['license']);
         $year = date('Y');
         if (strpos($license, $year) === false) {
             $this->logger->warning('The LICENSE copyright year (or range of years) looks out-of-date.');
@@ -230,8 +228,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function getChanges()
     {
-        $file = $this->fsio->isFile($this->config->get('files')['changes']);
-        return $this->fsio->get($file);
+        return $this->fsio->get($this->config->get('files')['changes']);
     }
 
     /**
