@@ -81,7 +81,7 @@ abstract class AbstractApi implements ApiInterface
             $query['page'] = $page;
             $query = $this->httpQuery($query);
             $json = $this->http->get($path, $query);
-            foreach ($this->httpValue($json) as $item) {
+            foreach ($this->httpValues($json) as $item) {
                 $found = true;
                 yield $item;
             }
@@ -105,7 +105,7 @@ abstract class AbstractApi implements ApiInterface
     protected function httpPost($path, array $query = [], array $data = [])
     {
         $query = $this->httpQuery($query);
-        return $this->httpValue($this->http->post($path, $query, $data));
+        return $this->httpValues($this->http->post($path, $query, $data));
     }
 
     /**
@@ -129,14 +129,14 @@ abstract class AbstractApi implements ApiInterface
 
     /**
      *
-     * Extracts the useful value from the API JSON result.
+     * Extracts the value elements from the API JSON result.
      *
      * @param mixed $json The API JSON result.
      *
      * @return mixed
      *
      */
-    protected function httpValue($json)
+    protected function httpValues($json)
     {
         return $json;
     }

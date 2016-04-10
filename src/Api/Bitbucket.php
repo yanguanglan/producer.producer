@@ -46,14 +46,14 @@ class Bitbucket extends AbstractApi
 
     /**
      *
-     * Extracts the useful value from the API JSON result.
+     * Extracts the value elements from the API JSON result.
      *
      * @param mixed $json The API JSON result.
      *
      * @return mixed
      *
      */
-    protected function httpValue($json)
+    protected function httpValues($json)
     {
         return $json->values;
     }
