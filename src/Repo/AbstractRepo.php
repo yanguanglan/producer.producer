@@ -24,21 +24,12 @@ abstract class AbstractRepo implements RepoInterface
 {
     /**
      *
-     * The VCS config file name.
-     *
-     * @var string
-     *
-     */
-    protected $configFile = '';
-
-    /**
-     *
-     * The VCS config file data.
+     * The remote origin.
      *
      * @var array
      *
      */
-    protected $vcsConfig = [];
+    protected $origin = [];
 
     /**
      *
@@ -74,7 +65,7 @@ abstract class AbstractRepo implements RepoInterface
      * @var Config
      *
      */
-    protected $producerConfig;
+    protected $config;
 
     /**
      *
@@ -91,8 +82,15 @@ abstract class AbstractRepo implements RepoInterface
     {
         $this->fsio = $fsio;
         $this->logger = $logger;
-        $this->vcsConfig = $this->fsio->parseIni($this->configFile, true);
-        $this->producerConfig = $config;
+        $this->config = $config;
+        $this->setOrigin();
+    }
+
+    abstract protected function setOrigin();
+
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 
     /**
@@ -168,7 +166,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkSupportFiles()
     {
-        foreach ($this->producerConfig->get('files') as $file) {
+        foreach ($this->config->get('files') as $file) {
             $found = $this->fsio->isFile($file);
             if (! $found) {
                 throw new Exception("The file {$file} is missing.");
@@ -186,7 +184,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function checkLicenseYear()
     {
-        $file = $this->fsio->isFile($this->producerConfig->get('files')['license']);
+        $file = $this->fsio->isFile($this->config->get('files')['license']);
         $license = $this->fsio->get($file);
         $year = date('Y');
         if (strpos($license, $year) === false) {
@@ -203,7 +201,7 @@ abstract class AbstractRepo implements RepoInterface
     {
         $this->shell('composer update');
 
-        $command = $this->producerConfig->get('commands')['phpunit'];
+        $command = $this->config->get('commands')['phpunit'];
 
         $last = $this->shell($command, $output, $return);
         if ($return) {
@@ -219,7 +217,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function getChanges()
     {
-        $file = $this->fsio->isFile($this->producerConfig->get('files')['changes']);
+        $file = $this->fsio->isFile($this->config->get('files')['changes']);
         return $this->fsio->get($file);
     }
 
@@ -237,7 +235,7 @@ abstract class AbstractRepo implements RepoInterface
         $this->shell("rm -rf {$target}");
 
         // validate
-        $phpdoc = $this->producerConfig->get('commands')['phpdoc'];
+        $phpdoc = $this->config->get('commands')['phpdoc'];
         $command = "{$phpdoc} -d src/ -t {$target} --force --verbose --template=xml";
         $line = $this->shell($command, $output, $return);
 
@@ -247,7 +245,7 @@ abstract class AbstractRepo implements RepoInterface
         // what is the expected @package name?
         $composer = $this->getComposer();
         $expectPackage = $composer->name;
-        $customPackage = $this->producerConfig->get('package');
+        $customPackage = $this->config->get('package');
         if ($customPackage) {
             $expectPackage = $customPackage;
         }

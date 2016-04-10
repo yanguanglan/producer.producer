@@ -144,9 +144,6 @@ class Fsio
      *
      * Checks to see if one of the arguments is a readable file within the root.
      *
-     * @todo Restrict this to a single file when we get repository-level
-     * .producer files.
-     *
      * @param string $file The file to check.
      *
      * @return string The name of the found file.
@@ -154,13 +151,11 @@ class Fsio
      */
     public function isFile($file)
     {
-        $files = func_get_args();
-        foreach ($files as $file) {
-            $path = $this->path($file);
-            if (file_exists($path) && is_readable($path)) {
-                return $file;
-            }
+        $path = $this->path($file);
+        if (file_exists($path) && is_readable($path)) {
+            return $file;
         }
+
         return '';
     }
 

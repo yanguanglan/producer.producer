@@ -23,26 +23,20 @@ class Hg extends AbstractRepo
 {
     /**
      *
-     * The Mercurial config file name.
-     *
-     * @var string
-     *
-     */
-    protected $configFile = '.hg/hgrc';
-
-    /**
-     *
      * Returns the VCS repo origin (i.e., the remote API origin).
      *
      * @return string
      *
      */
-    public function getOrigin()
+    protected function setOrigin()
     {
-        if (! isset($this->vcsConfig['paths']['default'])) {
+        $data = $this->fsio->parseIni('.hg/hgrc', true);
+
+        if (! isset($data['paths']['default'])) {
             throw new Exception('Could not determine default path.');
         }
-        return $this->vcsConfig['paths']['default'];
+
+        $this->origin = $data['paths']['default'];
     }
 
     /**
@@ -105,9 +99,9 @@ class Hg extends AbstractRepo
      */
     public function getChangesDate()
     {
-        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
+        $file = $this->fsio->isFile($this->config->get('files')['changes']);
         if (! $file) {
-            throw new Exception("{$file} is missing.");
+            throw new Exception("Changes file is missing.");
         }
 
         $this->shell("hg log --limit 1 {$file}", $output, $return);

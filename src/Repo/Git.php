@@ -19,28 +19,15 @@ use Producer\Exception;
  */
 class Git extends AbstractRepo
 {
-    /**
-     *
-     * The Git config file name.
-     *
-     * @var string
-     *
-     */
-    protected $configFile = '.git/config';
-
-    /**
-     *
-     * Returns the VCS repo origin (i.e., the remote API origin).
-     *
-     * @return string
-     *
-     */
-    public function getOrigin()
+    protected function setOrigin()
     {
-        if (! isset($this->vcsConfig['remote origin']['url'])) {
+        $data = $this->fsio->parseIni('.git/config', true);
+
+        if (! isset($data['remote origin']['url'])) {
             throw new Exception('Could not determine remote origin.');
         }
-        return $this->vcsConfig['remote origin']['url'];
+
+        $this->origin = $data['remote origin']['url'];
     }
 
     /**
@@ -101,9 +88,9 @@ class Git extends AbstractRepo
      */
     public function getChangesDate()
     {
-        $file = $this->fsio->isFile('CHANGES', 'CHANGES.md');
+        $file = $this->fsio->isFile($this->config->get('files')['changes']);
         if (! $file) {
-            throw new Exception("{$file} is missing.");
+            throw new Exception("Changes file is missing.");
         }
 
         $this->shell("git log -1 {$file}", $output, $return);
