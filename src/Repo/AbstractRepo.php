@@ -88,7 +88,7 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
-     * Sets the remote origin for the repository.
+     * Retains the remote origin for the repository from the VCS config file.
      *
      */
     abstract protected function setOrigin();
