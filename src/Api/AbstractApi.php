@@ -20,6 +20,13 @@ use Producer\Http;
  */
 abstract class AbstractApi implements ApiInterface
 {
+    /**
+     *
+     * An HTTP object.
+     *
+     * @var HTTP
+     *
+     */
     protected $http;
 
     /**
@@ -43,11 +50,29 @@ abstract class AbstractApi implements ApiInterface
         return $this->repoName;
     }
 
+    /**
+     *
+     * Sets a new HTTP object.
+     *
+     * @param string $base The base URL for HTTP calls.
+     *
+     */
     protected function setHttp($base)
     {
         $this->http = new Http($base);
     }
 
+    /**
+     *
+     * Repeats an HTTP GET to get all results from all pages.
+     *
+     * @param string $path GET from this path.
+     *
+     * @param array $query Query params.
+     *
+     * @return \Generator
+     *
+     */
     protected function httpGet($path, array $query = [])
     {
         $page = 1;
@@ -64,20 +89,51 @@ abstract class AbstractApi implements ApiInterface
         } while ($found);
     }
 
+    /**
+     *
+     * Makes one HTTP POST call and returns the results.
+     *
+     * @param string $path GET from this path.
+     *
+     * @param array $query Query params.
+     *
+     * @return mixed
+     *
+     */
     protected function httpPost($path, array $query = [], array $data = [])
     {
         $query = $this->httpQuery($query);
-        return $this->http->post($path, $query, $data);
+        return $this->httpValue($this->http->post($path, $query, $data));
     }
 
-    protected function httpQuery(array $query, $page = null)
+    /**
+     *
+     * Modifies query params to add a page and other API-specific params.
+     *
+     * @param array $query The query params.
+     *
+     * @param int $page The page number, if any.
+     *
+     * @return array
+     *
+     */
+    protected function httpQuery(array $query, $page = 0)
     {
-        if ($page !== null) {
+        if ($page) {
             $query['page'] = $page;
         }
         return $query;
     }
 
+    /**
+     *
+     * Extracts the useful value from the API JSON result.
+     *
+     * @param mixed $json The API JSON result.
+     *
+     * @return mixed
+     *
+     */
     protected function httpValue($json)
     {
         return $json;

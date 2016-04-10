@@ -63,7 +63,18 @@ class Gitlab extends AbstractApi
         $this->repoName = trim($repoName, '/');
     }
 
-    protected function httpQuery(array $query, $page = null)
+    /**
+     *
+     * Modifies query params to add a page and other API-specific params.
+     *
+     * @param array $query The query params.
+     *
+     * @param int $page The page number, if any.
+     *
+     * @return array
+     *
+     */
+    protected function httpQuery(array $query, $page = 0)
     {
         $query['private_token'] = $this->token;
         return parent::httpQuery($query, $page);

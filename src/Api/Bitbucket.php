@@ -44,6 +44,15 @@ class Bitbucket extends AbstractApi
         $this->repoName = trim($repoName, '/');
     }
 
+    /**
+     *
+     * Extracts the useful value from the API JSON result.
+     *
+     * @param mixed $json The API JSON result.
+     *
+     * @return mixed
+     *
+     */
     protected function httpValue($json)
     {
         return $json->values;
