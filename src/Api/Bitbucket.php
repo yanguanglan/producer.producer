@@ -61,7 +61,7 @@ class Bitbucket extends AbstractApi
         $issues = [];
 
         $yield = $this->httpGet(
-            "/repositories/{$this->repoName}/issues"
+            "/repositories/{$this->repoName}/issues",
             [
                 'sort' => 'created_on'
             ]
