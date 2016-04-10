@@ -86,8 +86,21 @@ abstract class AbstractRepo implements RepoInterface
         $this->setOrigin();
     }
 
+    /**
+     *
+     * Sets the remote origin for the repository.
+     *
+     */
     abstract protected function setOrigin();
 
+
+    /**
+     *
+     * Returns the remote origin for the repository.
+     *
+     * @return string
+     *
+     */
     public function getOrigin()
     {
         return $this->origin;
@@ -243,8 +256,7 @@ abstract class AbstractRepo implements RepoInterface
         $xml = simplexml_load_file("{$target}/structure.xml");
 
         // what is the expected @package name?
-        $composer = $this->getComposer();
-        $expectPackage = $composer->name;
+        $expectPackage = $this->getPackage();
         $customPackage = $this->config->get('package');
         if ($customPackage) {
             $expectPackage = $customPackage;

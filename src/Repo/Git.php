@@ -19,6 +19,11 @@ use Producer\Exception;
  */
 class Git extends AbstractRepo
 {
+    /**
+     *
+     * Retains the remote origin for the repository from the VCS config file.
+     *
+     */
     protected function setOrigin()
     {
         $data = $this->fsio->parseIni('.git/config', true);
@@ -88,9 +93,10 @@ class Git extends AbstractRepo
      */
     public function getChangesDate()
     {
-        $file = $this->fsio->isFile($this->config->get('files')['changes']);
+        $changes = $this->config->get('files')['changes'];
+        $file = $this->fsio->isFile($changes);
         if (! $file) {
-            throw new Exception("Changes file is missing.");
+            throw new Exception("File '{$changes}' is missing.");
         }
 
         $this->shell("git log -1 {$file}", $output, $return);

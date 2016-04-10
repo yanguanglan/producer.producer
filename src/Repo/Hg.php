@@ -23,9 +23,7 @@ class Hg extends AbstractRepo
 {
     /**
      *
-     * Returns the VCS repo origin (i.e., the remote API origin).
-     *
-     * @return string
+     * Retains the remote origin for the repository from the VCS config file.
      *
      */
     protected function setOrigin()
@@ -99,9 +97,10 @@ class Hg extends AbstractRepo
      */
     public function getChangesDate()
     {
-        $file = $this->fsio->isFile($this->config->get('files')['changes']);
+        $changes = $this->config->get('files')['changes'];
+        $file = $this->fsio->isFile($changes);
         if (! $file) {
-            throw new Exception("Changes file is missing.");
+            throw new Exception("File '{$changes}' is missing.");
         }
 
         $this->shell("hg log --limit 1 {$file}", $output, $return);
