@@ -18,26 +18,8 @@ use Producer\Repo\RepoInterface;
  * @package producer/producer
  *
  */
-class Gitlab implements ApiInterface
+class Gitlab extends AbstractApi
 {
-    /**
-     *
-     * The URL to the API.
-     *
-     * @var string
-     *
-     */
-    protected $apiurl;
-
-    /**
-     *
-     * The API repository name.
-     *
-     * @var string
-     *
-     */
-    protected $repoName;
-
     /**
      *
      * The secret token.
