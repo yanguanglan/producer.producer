@@ -6,4 +6,4 @@ Second major release.
 
 - No longer installs `phpunit` and `phpdoc`; you will need to install them yourself, either globally or as part of your package.
 
-- Updated instructions.
+- Updated instructions and tests.
