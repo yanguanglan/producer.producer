@@ -159,6 +159,8 @@ class Fsio
      *
      * Deletes a file, if it exists.
      *
+     * @param string $file The file to delete.
+     *
      * @return mixed
      *
      */
@@ -214,6 +216,8 @@ class Fsio
     /**
      *
      * Removes a directory, if it exists.
+     *
+     * @param string $dir The directory to remove.
      *
      * @return mixed
      *

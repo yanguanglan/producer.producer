@@ -235,6 +235,10 @@ abstract class AbstractRepo implements RepoInterface
      *
      * Checks the `src/` docblocks using phpdoc.
      *
+     * @param string $version A version number. It provided, will only run
+     * phpdoc when the version is not 0.*, dev, or alpha; if not provided, will
+     * always run phpdoc.
+     *
      */
     public function checkDocblocks($version = null)
     {
