@@ -13,7 +13,7 @@ class FsioTest extends \PHPUnit_Framework_TestCase
 
     public function testIsDir()
     {
-        $this->assertTrue($this->fsio->isDir('../' . dirname(__DIR__)));
+        $this->assertTrue($this->fsio->isDir('../' . basename(__DIR__)));
     }
 
     public function testMkdir()
@@ -31,7 +31,7 @@ class FsioTest extends \PHPUnit_Framework_TestCase
             'Producer\Exception',
             'mkdir(): File exists'
         );
-        $this->fsio->mkdir('../' . dirname(__DIR__));
+        $this->fsio->mkdir('../' . basename(__DIR__));
     }
 
     public function testPutAndGet()
