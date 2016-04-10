@@ -50,10 +50,18 @@ abstract class AbstractApi implements ApiInterface
 
     protected function httpGet($path, array $query = [])
     {
-        $query = $this->httpQuery($query);
-        foreach ($this->http->get($path, $query) as $json) {
-            yield $this->httpValue($json);
-        }
+        $page = 1;
+        do {
+            $found = false;
+            $query['page'] = $page;
+            $query = $this->httpQuery($query);
+            $json = $this->http->get($path, $query);
+            foreach ($this->httpValue($json) as $item) {
+                $found = true;
+                yield $item;
+            }
+            $page ++;
+        } while ($found);
     }
 
     protected function httpPost($path, array $query = [], array $data = [])
@@ -62,8 +70,11 @@ abstract class AbstractApi implements ApiInterface
         return $this->http->post($path, $query, $data);
     }
 
-    protected function httpQuery(array $query)
+    protected function httpQuery(array $query, $page = null)
     {
+        if ($page !== null) {
+            $query['page'] = $page;
+        }
         return $query;
     }
 

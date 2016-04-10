@@ -63,10 +63,10 @@ class Gitlab extends AbstractApi
         $this->repoName = trim($repoName, '/');
     }
 
-    protected function httpQuery(array $query)
+    protected function httpQuery(array $query, $page = null)
     {
         $query['private_token'] = $this->token;
-        return $query;
+        return parent::httpQuery($query, $page);
     }
 
     /**

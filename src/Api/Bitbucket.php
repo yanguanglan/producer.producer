@@ -46,7 +46,7 @@ class Bitbucket extends AbstractApi
 
     protected function httpValue($json)
     {
-        return $json->value;
+        return $json->values;
     }
 
     /**

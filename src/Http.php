@@ -10,33 +10,27 @@ class Http
         $this->base = $base;
     }
 
-    public function get($path, array $query = [])
-    {
-        $url = $this->base . $path;
-        $context = $this->newContext('GET');
-        $page = 0;
-        do {
-            $page ++;
-            $query['page'] = $page;
-            $url .= '?' . http_build_query($query);
-            $json = json_decode(file_get_contents($url, FALSE, $context));
-            if ($json) {
-                yield $json;
-            }
-        } while ($json);
-    }
-
-    public function post($path, array $query = [], array $data = [])
+    public function __invoke($method, $path, array $query = [], array $data = [])
     {
         $url = $this->base . $path;
         if ($query) {
             $url .= '?' . http_build_query($query);
         }
 
-        $context = $this->newContext('POST', $data);
-        $data = file_get_contents($url, FALSE, $context);
-        return json_decode($data);
+        $context = $this->newContext($method);
+        return json_decode(file_get_contents($url, FALSE, $context));
     }
+
+    public function get($path, array $query = [])
+    {
+        return $this('GET', $path, $query);
+    }
+
+    public function post($path, array $query = [], array $data = [])
+    {
+        return $this('POST', $path, $query, $data);
+    }
+
 
     protected function newContext($method, array $data = [])
     {
