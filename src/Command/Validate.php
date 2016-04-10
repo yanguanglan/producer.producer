@@ -62,8 +62,8 @@ class Validate extends AbstractCommand
         $this->repo->checkSupportFiles();
         $this->repo->checkLicenseYear();
         $this->repo->checkTests();
-        $this->checkDocblocks();
-        $this->checkChanges();
+        $this->repo->checkDocblocks($this->version);
+        $this->repo->checkChanges();
         $this->checkIssues();
         $this->logger->info("{$this->package} {$this->version} appears valid for release!");
     }
@@ -104,60 +104,6 @@ class Validate extends AbstractCommand
         $format = '^(v?\d+.\d+.\d+)(-(dev|alpha|beta|RC|p)\d*)?$';
         preg_match("/$format/", $version, $matches);
         return (bool) $matches;
-    }
-
-    /**
-     *
-     * Checks if the `src/` docblocks are valid; skips for dev/alpha versions.
-     *
-     */
-    protected function checkDocblocks()
-    {
-        switch (true) {
-            case substr($this->version, 0, 2) == '0.':
-                $skip = '0.x';
-                break;
-            case strpos($this->version, 'dev') !== false:
-                $skip = 'dev';
-                break;
-            case strpos($this->version, 'alpha') !== false:
-                $skip = 'alpha';
-                break;
-            default:
-                $skip = false;
-        }
-
-        if ($skip) {
-            $this->logger->info("Skipping docblock check for $skip release.");
-            return;
-        }
-
-        $this->repo->checkDocblocks();
-    }
-
-    /**
-     *
-     * Checks to see if the CHANGES are up to date.
-     *
-     */
-    protected function checkChanges()
-    {
-        $this->logger->info('Checking if changes are up to date.');
-
-        $lastChangelog = $this->repo->getChangesDate();
-        $this->logger->info("Last changes date is $lastChangelog.");
-
-        $lastCommit = $this->repo->getLastCommitDate();
-        $this->logger->info("Last commit date is $lastCommit.");
-
-        if ($lastChangelog == $lastCommit) {
-            $this->logger->info('Changes appear up to date.');
-            return;
-        }
-
-        $this->logger->error('Changes appear out of date.');
-        $this->repo->logSinceDate($lastChangelog);
-        throw new Exception('Please update and commit the changes.');
     }
 
     /**

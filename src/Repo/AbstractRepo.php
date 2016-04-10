@@ -236,8 +236,27 @@ abstract class AbstractRepo implements RepoInterface
      * Checks the `src/` docblocks using phpdoc.
      *
      */
-    public function checkDocblocks()
+    public function checkDocblocks($version = null)
     {
+        switch (true) {
+            case substr($version, 0, 2) == '0.':
+                $skip = '0.x';
+                break;
+            case strpos($version, 'dev') !== false:
+                $skip = 'dev';
+                break;
+            case strpos($version, 'alpha') !== false:
+                $skip = 'alpha';
+                break;
+            default:
+                $skip = false;
+        }
+
+        if ($skip) {
+            $this->logger->info("Skipping docblock check for $skip release.");
+            return;
+        }
+
         // where to write validation records?
         $target = $this->fsio->sysTempDir('/phpdoc/' . $this->getPackage());
 
@@ -289,5 +308,29 @@ abstract class AbstractRepo implements RepoInterface
                 throw new Exception('Docblocks do not appear valid.');
             }
         }
+    }
+
+    /**
+     *
+     * Checks to see if the changes are up to date.
+     *
+     */
+     public function checkChanges()
+    {
+        $lastChangelog = $this->getChangesDate();
+        $this->logger->info("Last changes date is $lastChangelog.");
+
+        $lastCommit = $this->getLastCommitDate();
+        $this->logger->info("Last commit date is $lastCommit.");
+
+        if ($lastChangelog == $lastCommit) {
+            $this->logger->info('Changes appear up to date.');
+            return;
+        }
+
+        $this->logger->error('Changes appear out of date.');
+        $this->logger->error('Log of possible missing changes:');
+        $this->logSinceDate($lastChangelog);
+        throw new Exception('Please update and commit the changes.');
     }
 }
