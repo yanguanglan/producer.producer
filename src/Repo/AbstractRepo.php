@@ -183,7 +183,7 @@ abstract class AbstractRepo implements RepoInterface
             if (! $this->fsio->isFile($file)) {
                 throw new Exception("The file {$file} is missing.");
             }
-            if (trim($this->fsio->get($found)) === '') {
+            if (trim($this->fsio->get($file)) === '') {
                 throw new Exception("The file {$file} is empty.");
             }
         }
