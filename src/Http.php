@@ -60,7 +60,7 @@ class Http
             $url .= '?' . http_build_query($query);
         }
 
-        $context = $this->newContext($method);
+        $context = $this->newContext($method, $data);
         return json_decode(file_get_contents($url, FALSE, $context));
     }
 
