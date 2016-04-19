@@ -78,10 +78,9 @@ all of:
 ### Package Configuration
 
 Inside your package repository, you may define a `.producer/config` file that
-overrides any of these options for that specific package. You may also add
-these additional directives:
+sets any of the following options for that specific package.
 
-```
+```ini
 ; custom @package docblock value
 package = Custom.Name
 
