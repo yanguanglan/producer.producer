@@ -21,11 +21,4 @@ producer versions
     lists existing release versions
 
 producer log-since {$version}
-
-producer config
-    initializes ~/.producer/default/config.php # has private info
-    initializes ~/.producer/default/README
-    initializes ~/.producer/default/LICENSE
-    initializes ~/.producer/default/composer.json
-    allow for aura, league, symfony, etc. templates
 ```
