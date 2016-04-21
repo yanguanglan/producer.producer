@@ -175,7 +175,8 @@ abstract class AbstractRepo implements RepoInterface
             'phpunit.xml.dist',
         ];
         foreach ($files as $file) {
-            if (! $this->fsio->isFile($file)) {
+            $found = $this->fsio->isFile($file);
+            if (! $found) {
                 throw new Exception("{$file} file is missing.");
             }
             if (trim($this->fsio->get($found)) === '') {
