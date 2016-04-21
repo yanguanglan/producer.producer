@@ -34,6 +34,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
+            'github_baseurl' => 'https://api.github.com',
             'github_token' => null,
             'github_username' => null,
             'gitlab_token' => 'foobarbazdibzimgir',
@@ -41,6 +42,42 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'commands' => [
                 'phpdoc' => 'phpdoc',
                 'phpunit' => '/path/to/phpunit',
+            ],
+            'files' => [
+                'changes' => 'CHANGES.md',
+                'contributing' => 'CONTRIBUTING.md',
+                'license' => 'LICENSE.md',
+                'phpunit' => 'phpunit.xml.dist',
+                'readme' => 'README.md',
+            ],
+        ];
+
+        $actual = $config->getAll();
+
+        $this->assertSame($expect, $actual);
+    }
+
+    public function testGitHubBaseURLOverride()
+    {
+        $homefs = $this->mockFsio([
+            'github_baseurl' => 'https://hostname/api/v3',
+            'github_token' => 'foo',
+        ]);
+        $repofs = $this->mockFsio([], false);
+
+        $config = new Config($homefs, $repofs);
+
+        $expect = [
+            'bitbucket_password' => null,
+            'bitbucket_username' => null,
+            'github_baseurl' => 'https://hostname/api/v3',
+            'github_token' => 'foo',
+            'github_username' => null,
+            'gitlab_token' => null,
+            'package' => '',
+            'commands' => [
+                'phpdoc' => 'phpdoc',
+                'phpunit' => 'phpunit',
             ],
             'files' => [
                 'changes' => 'CHANGES.md',
@@ -74,6 +111,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
+            'github_baseurl' => 'https://api.github.com',
             'github_token' => null,
             'github_username' => null,
             'gitlab_token' => 'foobarbazdibzimgir',

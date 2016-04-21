@@ -27,6 +27,7 @@ class Config
     protected $data = [
         'bitbucket_password' => null,
         'bitbucket_username' => null,
+        'github_baseurl' => 'https://api.github.com',
         'github_token' => null,
         'github_username' => null,
         'gitlab_token' => null,
