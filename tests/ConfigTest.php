@@ -34,7 +34,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
-            'github_baseurl' => 'https://api.github.com',
+            'github_hostname' => 'api.github.com',
             'github_token' => null,
             'github_username' => null,
             'gitlab_token' => 'foobarbazdibzimgir',
@@ -60,8 +60,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
     public function testGitHubBaseURLOverride()
     {
         $homefs = $this->mockFsio([
-            'github_baseurl' => 'https://hostname/api/v3',
-            'github_token' => 'foo',
+            'github_hostname' => 'example.org',
+            'github_username' => 'foo',
+            'github_token' => 'bar',
         ]);
         $repofs = $this->mockFsio([], false);
 
@@ -70,9 +71,9 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
-            'github_baseurl' => 'https://hostname/api/v3',
-            'github_token' => 'foo',
-            'github_username' => null,
+            'github_hostname' => 'example.org',
+            'github_token' => 'bar',
+            'github_username' => 'foo',
             'gitlab_token' => null,
             'package' => '',
             'commands' => [
@@ -111,7 +112,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
-            'github_baseurl' => 'https://api.github.com',
+            'github_hostname' => 'api.github.com',
             'github_token' => null,
             'github_username' => null,
             'gitlab_token' => 'foobarbazdibzimgir',
