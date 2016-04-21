@@ -26,15 +26,16 @@ class Github extends AbstractApi
      *
      * @param string $origin The repository remote origin.
      *
-     * @param string $user The API username.
+     * @param string $hostname The hostname of GitHub service.
      *
-     * @param string $token The API secret token.
+     * @param string $user   The API username.
      *
+     * @param string $token  The API secret token.
      */
-    public function __construct($origin, $user, $token)
+    public function __construct($origin, $hostname, $user, $token)
     {
         // set the HTTP object
-        $this->setHttp("https://{$user}:{$token}@api.github.com");
+        $this->setHttp("https://{$user}:{$token}@{$hostname}");
 
         // start by presuming HTTPS
         $repoName = parse_url($origin, PHP_URL_PATH);

@@ -182,6 +182,17 @@ class ProducerContainer
             case (strpos($origin, 'github.com') !== false):
                 return new Api\Github(
                     $origin,
+                    $config->get('github_baseurl'),
+                    $config->get('github_username'),
+                    $config->get('github_token')
+                );
+
+            // Default is github.com, so anything else in `github_baseurl`
+            // is assumed GitHub Enterprise
+            case (strpos($config->get('github_baseurl'), 'github.com') === false):
+                return new Api\Github(
+                    $origin,
+                    $config->get('github_baseurl'),
                     $config->get('github_username'),
                     $config->get('github_token')
                 );
