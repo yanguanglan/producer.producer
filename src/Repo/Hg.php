@@ -97,12 +97,12 @@ class Hg extends AbstractRepo
      */
     public function getChangesDate()
     {
-        $changes = $this->config->get('files')['changes'];
-        if (! $this->fsio->isFile($changes)) {
-            throw new Exception("File '{$changes}' is missing.");
+        $changelog = $this->config->get('files')['changelog'];
+        if (! $this->fsio->isFile($changelog)) {
+            throw new Exception("File '{$changelog}' is missing.");
         }
 
-        $this->shell("hg log --limit 1 {$changes}", $output, $return);
+        $this->shell("hg log --limit 1 {$changelog}", $output, $return);
         return $this->findDate($output);
     }
 

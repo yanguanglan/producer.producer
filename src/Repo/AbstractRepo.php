@@ -228,7 +228,7 @@ abstract class AbstractRepo implements RepoInterface
      */
     public function getChanges()
     {
-        return $this->fsio->get($this->config->get('files')['changes']);
+        return $this->fsio->get($this->config->get('files')['changelog']);
     }
 
     /**
