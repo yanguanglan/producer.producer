@@ -3,31 +3,29 @@ namespace Producer;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
-    protected function mockFsio(array $returnData, $isFile = true)
-    {
-        $fsio = $this->getMockBuilder(Fsio::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['isFile', 'parseIni'])
-            ->getMock();
-        $fsio
-            ->expects($this->any())
-            ->method('isFile')->will($this->returnValue($isFile));
-        $fsio
-            ->expects($this->any())
-            ->method('parseIni')->will($this->returnValue($returnData));
+    protected $homeConfig = '
+gitlab_token = foobarbazdibzimgir
 
-        return $fsio;
-    }
+[commands]
+phpunit = /path/to/phpunit
+';
+
+    protected $repoConfig = '
+package = Foo.Bar
+
+[commands]
+phpunit = ./vendor/bin/phpunit
+
+[files]
+contributing = .github/CONTRIBUTING
+';
 
     public function testLoadHomeConfig()
     {
-        $homefs = $this->mockFsio([
-            'gitlab_token' => 'foobarbazdibzimgir',
-            'commands' => [
-                'phpunit' => '/path/to/phpunit',
-            ]
-        ]);
-        $repofs = $this->mockFsio([], false);
+        $homefs = new FakeFsio('/home/username');
+        $homefs->setFiles(['/home/username/.producer/config' => $this->homeConfig]);
+
+        $repofs = new FakeFsio('/path/to/repo');
 
         $config = new Config($homefs, $repofs);
 
@@ -43,7 +41,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
                 'phpunit' => '/path/to/phpunit',
             ],
             'files' => [
-                'changes' => 'CHANGES.md',
+                'changelog' => 'CHANGELOG.md',
                 'contributing' => 'CONTRIBUTING.md',
                 'license' => 'LICENSE.md',
                 'phpunit' => 'phpunit.xml.dist',
@@ -58,16 +56,11 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadHomeAndRepoConfig()
     {
-        $homefs = $this->mockFsio(['gitlab_token' => 'foobarbazdibzimgir']);
-        $repofs = $this->mockFsio([
-            'package' => 'Foo.Bar',
-            'commands' => [
-                'phpunit' => './vendor/bin/phpunit'
-            ],
-            'files' => [
-                'contributing' => '.github/CONTRIBUTING'
-            ],
-        ]);
+        $homefs = new FakeFsio('/home/username');
+        $homefs->setFiles(['/home/username/.producer/config' => $this->homeConfig]);
+
+        $repofs = new FakeFsio('/path/to/repo');
+        $repofs->setFiles(['/path/to/repo/.producer/config' => $this->repoConfig]);
 
         $config = new Config($homefs, $repofs);
 
@@ -83,7 +76,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
                 'phpunit' => './vendor/bin/phpunit',
             ],
             'files' => [
-                'changes' => 'CHANGES.md',
+                'changelog' => 'CHANGELOG.md',
                 'contributing' => '.github/CONTRIBUTING',
                 'license' => 'LICENSE.md',
                 'phpunit' => 'phpunit.xml.dist',

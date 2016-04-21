@@ -91,7 +91,7 @@ phpdoc = /path/to/phpdoc
 
 ; names for support files
 [files]
-changes = CHANGES.md
+changelog = CHANGELOG.md
 contributing = CONTRIBUTING.md
 license = LICENSE.md
 phpunit = phpunit.xml.dist
