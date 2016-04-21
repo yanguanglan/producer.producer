@@ -34,23 +34,24 @@ class Github extends AbstractApi
      */
     public function __construct($origin, $hostname, $user, $token)
     {
+        // @see https://developer.github.com/v3/enterprise
+        if (strpos($hostname, 'github.com') === false) {
+            $hostname .= '/api/v3';
+        }
+
         // set the HTTP object
         $this->setHttp("https://{$user}:{$token}@{$hostname}");
+        
+        $this->setRepoNameFromOrigin($origin);
+    }
 
+    private function setRepoNameFromOrigin($origin)
+    {
         // start by presuming HTTPS
         $repoName = parse_url($origin, PHP_URL_PATH);
 
-        // check for SSH
-        $ssh = 'git@github.com:';
-        $len = strlen($ssh);
-        if (substr($origin, 0, $len) == $ssh) {
-            $repoName = substr($origin, $len);
-        }
-
-        // strip .git from the end
-        if (substr($repoName, -4) == '.git') {
-            $repoName = substr($repoName, 0, -4);
-        }
+        $repoName = explode(':', $repoName)[1];
+        $repoName = rtrim($repoName, '.git');
 
         // retain
         $this->repoName = trim($repoName, '/');
