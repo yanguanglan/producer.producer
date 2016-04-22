@@ -51,7 +51,9 @@ class Github extends AbstractApi
         $repoName = parse_url($origin, PHP_URL_PATH);
 
         $repoName = explode(':', $repoName)[1];
-        $repoName = rtrim($repoName, '.git');
+
+        // strip .git from the end
+        $repoName = preg_replace('/\.git$/', '', $repoName);
 
         // retain
         $this->repoName = trim($repoName, '/');
