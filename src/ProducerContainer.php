@@ -179,7 +179,7 @@ class ProducerContainer
     {
         switch (true) {
 
-            case (strpos($origin, 'github.com') !== false):
+            case ($this->isGithubBased($origin, $config)):
                 return new Api\Github(
                     $origin,
                     $config->get('github_hostname'),
@@ -187,17 +187,7 @@ class ProducerContainer
                     $config->get('github_token')
                 );
 
-            // Default is github.com, so anything else in `github_hostname`
-            // is assumed GitHub Enterprise
-            case (strpos($config->get('github_hostname'), 'github.com') === false):
-                return new Api\Github(
-                    $origin,
-                    $config->get('github_hostname'),
-                    $config->get('github_username'),
-                    $config->get('github_token')
-                );
-
-            case (strpos($origin, 'gitlab.com') !== false):
+            case ($this->isGitlabBased($origin, $config)):
                 return new Api\Gitlab(
                     $origin,
                     $config->get('gitlab_token')
@@ -214,5 +204,25 @@ class ProducerContainer
                 throw new Exception("Producer will not work with {$origin}.");
 
         }
+    }
+
+    private function isGithubBased($origin, $config)
+    {
+        // GitHub hostname is set to `api.github.com` and also appears
+        // in the current repository remote called origin.
+        $isGithubCom = $config->get('github_hostname') === 'api.github.com' &&
+            strpos($origin, 'github.com') !== false;
+
+        // GitHub hostname is set to something other than `api.github.com` and
+        // that same hostname appears in current repository remote called origin.
+        $isGithubEnterprise = $config->get('github_hostname') !== 'api.github.com' &&
+            strpos($origin, $config->get('github_hostname')) !== false;
+
+        return $isGithubCom || $isGithubEnterprise;
+    }
+
+    private function isGitlabBased($origin, $config)
+    {
+        return strpos($origin, 'gitlab.com') !== false;
     }
 }
