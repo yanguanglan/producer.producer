@@ -16,7 +16,7 @@ your package.
 
 ### Global Install
 
-To install Producer globally, issue `composer global require producer/producer ~2.0`.
+To install Producer globally, issue `composer global require producer/producer`.
 
 Be sure to add `$COMPOSER_HOME/vendor/bin` to your `$PATH`;
 [instuctions here](https://getcomposer.org/doc/03-cli.md#global).
@@ -28,16 +28,7 @@ Test the installation by issuing `producer` at the command line to see some
 
 ### Package Install
 
-To install Producer package as a development requirement for your package, add
-the following lines to your `composer.json`:
-
-```
-"require-dev": {
-    "producer/producer": "~2.0"
-}
-```
-
-Issue `composer install` or `composer update` to complete the installation.
+To install the Producer package as a development requirement for your package issue `composer require --dev producer/producer`.
 
 Test the installation by issuing `./vendor/bin/producer` at the command line to
 see some "help" output.
