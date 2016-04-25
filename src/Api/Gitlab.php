@@ -35,29 +35,27 @@ class Gitlab extends AbstractApi
      *
      * @param string $origin The repository remote origin.
      *
-     * @param string $token The API secret token.
-     *
+     * @param string $hostname
+     * @param string $token  The API secret token.
      */
-    public function __construct($origin, $token)
+    public function __construct($origin, $hostname, $token)
     {
         // set the HTTP object and token
-        $this->setHttp("https://gitlab.com/api/v3");
+        $this->setHttp("https://{$hostname}/api/v3");
         $this->token = $token;
 
-        // presume HTTPS
+        $this->setRepoNameFromOrigin($origin);
+    }
+
+    private function setRepoNameFromOrigin($origin)
+    {
+        // start by presuming HTTPS
         $repoName = parse_url($origin, PHP_URL_PATH);
 
-        // check for SSH
-        $ssh = 'git@gitlab.com:';
-        $len = strlen($ssh);
-        if (substr($origin, 0, $len) == $ssh) {
-            $repoName = substr($origin, $len);
-        }
+        $repoName = explode(':', $repoName)[1];
 
         // strip .git from the end
-        if (substr($repoName, -4) == '.git') {
-            $repoName = substr($repoName, 0, -4);
-        }
+        $repoName = preg_replace('/\.git$/', '', $repoName);
 
         // retain
         $this->repoName = trim($repoName, '/');
