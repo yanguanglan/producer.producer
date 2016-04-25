@@ -206,19 +206,24 @@ class ProducerContainer
         }
     }
 
+    /**
+     * Is GitHub-based if hostname is `api.github.com` and the project remote
+     * contains `github.com`. Alternatively, the project is using GitHub Enterprise
+     * if hostname is NOT `api.github.com` and the configured hostname matches
+     * the project remote called `origin`.
+     *
+     * @param $origin
+     * @param $config
+     *
+     * @return bool
+     */
     private function isGithubBased($origin, $config)
     {
-        // GitHub hostname is set to `api.github.com` and also appears
-        // in the current repository remote called origin.
-        $isGithubCom = $config->get('github_hostname') === 'api.github.com' &&
-            strpos($origin, 'github.com') !== false;
-
-        // GitHub hostname is set to something other than `api.github.com` and
-        // that same hostname appears in current repository remote called origin.
-        $isGithubEnterprise = $config->get('github_hostname') !== 'api.github.com' &&
-            strpos($origin, $config->get('github_hostname')) !== false;
-
-        return $isGithubCom || $isGithubEnterprise;
+        if ($config->get('github_hostname') === 'api.github.com') {
+            return strpos($origin, 'github.com') !== false;
+        } else {
+            return strpos($origin, $config->get('github_hostname')) !== false;
+        }
     }
 
     private function isGitlabBased($origin, $config)
