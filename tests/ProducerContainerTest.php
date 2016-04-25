@@ -11,7 +11,7 @@ class ProducerContainerTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider githubProvider
      */
-    public function testThatItReturnsAppropriateApiImplementationForGithub($host, $origin)
+    public function testThatItReturnsAppropriateApiImplementationForGithub($host, $origin, $repoName)
     {
         $container = new ProducerContainer($_SERVER['HOME'], getcwd(), STDOUT, STDERR);
 
@@ -30,13 +30,14 @@ class ProducerContainerTest extends \PHPUnit_Framework_TestCase
         $api = $newApi->invokeArgs($container, [$origin, $config]);
         
         $this->assertInstanceOf(Github::class, $api);
+        $this->assertEquals($repoName, $api->getRepoName());
     }
 
     public function githubProvider()
     {
         return [
-            ['github.enterprise.com', 'git@github.enterprise.com:producer/producer.git'],
-            ['api.github.com', 'git@github.com:producer/producer.git'],
+            ['github.enterprise.com', 'git@github.enterprise.com:producer/producer.git', 'producer/producer'],
+            ['api.github.com', 'git@github.com:producer/producer.git', 'producer/producer'],
         ];
     }
 
