@@ -190,6 +190,7 @@ class ProducerContainer
             case ($this->isGitlabBased($origin, $config)):
                 return new Api\Gitlab(
                     $origin,
+                    $config->get('gitlab_hostname'),
                     $config->get('gitlab_token')
                 );
 
@@ -228,6 +229,10 @@ class ProducerContainer
 
     private function isGitlabBased($origin, $config)
     {
-        return strpos($origin, 'gitlab.com') !== false;
+        if ($config->get('gitlab_hostname') === 'gitlab.com') {
+            return strpos($origin, 'gitlab.com') !== false;
+        } else {
+            return strpos($origin, $config->get('gitlab_hostname')) !== false;
+        }
     }
 }
