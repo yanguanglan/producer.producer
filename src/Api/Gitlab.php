@@ -115,7 +115,7 @@ class Gitlab extends AbstractApi
             $issues[] = (object) [
                 'number' => $issue->iid,
                 'title' => $issue->title,
-                'url' => "https://gitlab.com/{$this->repoName}/issues/{$issue->iid}",
+                'url' => "https://{$this->hostname}/{$this->repoName}/issues/{$issue->iid}",
             ];
         }
 
