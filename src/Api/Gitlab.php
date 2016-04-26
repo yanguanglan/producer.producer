@@ -50,7 +50,7 @@ class Gitlab extends AbstractApi
     public function __construct($origin, $hostname, $token)
     {
         // set the HTTP object and token
-        $this->setHttp("http://{$hostname}/api/v3");
+        $this->setHttp("https://{$hostname}/api/v3");
         $this->token = $token;
         $this->hostname = $hostname;
 
