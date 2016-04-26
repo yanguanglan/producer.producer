@@ -5,27 +5,30 @@ use Producer\Api\Github;
 
 class GitHubTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCanGetGithubRepoName()
+    /**
+     * @dataProvider remoteProvider
+     */
+    public function testRepoNameCanBeDerivedFromRemote($remote, $hostname, $repoName)
     {
         $api = new Github(
-            'git@github.com:producerphp/producer.producer.git',
-            'api.github.com',
+            $remote,
+            $hostname,
             'username',
             'token'
         );
 
-        $this->assertEquals('producerphp/producer.producer', $api->getRepoName());
+        $this->assertEquals($repoName, $api->getRepoName());
     }
 
-    public function testCanGetGitHubEnterpriseRepoName()
-    {
-        $api = new Github(
-            'git@example.org:producerphp/producer.producer.git',
-            'example.org',
-            'username',
-            'token'
-        );
-
-        $this->assertEquals('producerphp/producer.producer', $api->getRepoName());
+    public function remoteProvider()
+    {   
+        return [
+            ['git@github.com:user/repo.git', 'api.github.com', 'user/repo'],
+            ['http://github.com/user/repo.git', 'api.github.com', 'user/repo'],
+            ['https://github.com/user/repo.git', 'api.github.com', 'user/repo'],
+            ['git@example.org:user/repo.git', 'example.org', 'user/repo'],
+            ['http://example.org/user/repo.git', 'example.org', 'user/repo'],
+            ['https://example.org/user/repo.git', 'example.org', 'user/repo'],
+        ];
     }
 }

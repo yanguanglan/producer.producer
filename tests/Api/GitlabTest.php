@@ -5,25 +5,29 @@ use Producer\Api\Gitlab;
 
 class GitlabTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCanGetGitlabRepoName()
+    /**
+     * @dataProvider remoteProvider
+     */
+    public function testRepoNameCanBeDerivedFromRemote($remote, $hostname, $repoName)
     {
         $api = new Gitlab(
-            'git@gitlab.com:producerphp/producer.producer.git',
-            'gitlab.com',
+            $remote,
+            $hostname,
             'token'
         );
 
-        $this->assertEquals('producerphp/producer.producer', $api->getRepoName());
+        $this->assertEquals($repoName, $api->getRepoName());
     }
 
-    public function testCanGetGitlabSelfHostedRepoName()
-    {
-        $api = new Gitlab(
-            'git@example.org:producerphp/producer.producer.git',
-            'example.org',
-            'token'
-        );
-
-        $this->assertEquals('producerphp/producer.producer', $api->getRepoName());
+    public function remoteProvider()
+    {   
+        return [
+            ['git@gitlab.com:user/repo.git', 'gitlab.com', 'user/repo'],
+            ['http://gitlab.com/user/repo.git', 'gitlab.com', 'user/repo'],
+            ['https://gitlab.com/user/repo.git', 'gitlab.com', 'user/repo'],
+            ['git@example.org:user/repo.git', 'example.org', 'user/repo'],
+            ['http://example.org/user/repo.git', 'example.org', 'user/repo'],
+            ['https://example.org/user/repo.git', 'example.org', 'user/repo'],
+        ];
     }
 }
