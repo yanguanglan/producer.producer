@@ -174,18 +174,26 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
-     * Checks the various support files.
+     * Checks the various support files, *except* for CHANGES, since updating
+     * the changes should be the very last thing to deal with.
      *
      */
     public function checkSupportFiles()
     {
-        foreach ($this->config->get('files') as $file) {
-            if (! $this->fsio->isFile($file)) {
-                throw new Exception("The file {$file} is missing.");
-            }
-            if (trim($this->fsio->get($file)) === '') {
-                throw new Exception("The file {$file} is empty.");
-            }
+        $files = $this->config->get('files');
+        unset($files['changes']);
+        foreach ($files as $file) {
+            $this->checkSupportFile($file);
+        }
+    }
+
+    protected function checkSupportFile($file)
+    {
+        if (! $this->fsio->isFile($file)) {
+            throw new Exception("The file {$file} is missing.");
+        }
+        if (trim($this->fsio->get($file)) === '') {
+            throw new Exception("The file {$file} is empty.");
         }
     }
 
@@ -318,8 +326,11 @@ abstract class AbstractRepo implements RepoInterface
      * Checks to see if the changes are up to date.
      *
      */
-     public function checkChanges()
+    public function checkChanges()
     {
+        $file = $this->config->get('files')['changes'];
+        $this->checkSupportFile($file);
+
         $lastChangelog = $this->getChangesDate();
         $this->logger->info("Last changes date is $lastChangelog.");
 
