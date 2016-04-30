@@ -32,11 +32,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config($homefs, $repofs);
 
         $expect = [
-            'bitbucket_password' => null,
+            'bitbucket_hostname' => 'api.bitbucket.org',
             'bitbucket_username' => null,
+            'bitbucket_password' => null,
             'github_hostname' => 'api.github.com',
-            'github_token' => null,
             'github_username' => null,
+            'github_token' => null,
             'gitlab_hostname' => 'gitlab.com',
             'gitlab_token' => 'foobarbazdibzimgir',
             'package' => '',
@@ -70,11 +71,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config($homefs, $repofs);
 
         $expect = [
-            'bitbucket_password' => null,
+            'bitbucket_hostname' => 'api.bitbucket.org',
             'bitbucket_username' => null,
+            'bitbucket_password' => null,
             'github_hostname' => 'example.org',
-            'github_token' => 'bar',
             'github_username' => 'foo',
+            'github_token' => 'bar',
             'gitlab_hostname' => 'gitlab.com',
             'gitlab_token' => null,
             'package' => '',
@@ -107,11 +109,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config($homefs, $repofs);
 
         $expect = [
-            'bitbucket_password' => null,
+            'bitbucket_hostname' => 'api.bitbucket.org',
             'bitbucket_username' => null,
+            'bitbucket_password' => null,
             'github_hostname' => 'api.github.com',
-            'github_token' => null,
             'github_username' => null,
+            'github_token' => null,
             'gitlab_hostname' => 'example.org',
             'gitlab_token' => 'bar',
             'package' => '',
@@ -149,11 +152,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $config = new Config($homefs, $repofs);
 
         $expect = [
-            'bitbucket_password' => null,
+            'bitbucket_hostname' => 'api.bitbucket.org',
             'bitbucket_username' => null,
+            'bitbucket_password' => null,
             'github_hostname' => 'api.github.com',
-            'github_token' => null,
             'github_username' => null,
+            'github_token' => null,
             'gitlab_hostname' => 'gitlab.com',
             'gitlab_token' => 'foobarbazdibzimgir',
             'package' => 'Foo.Bar',
