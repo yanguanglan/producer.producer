@@ -62,6 +62,13 @@ abstract class AbstractApi implements ApiInterface
         $this->http = new Http($base);
     }
 
+    /**
+     *
+     * Sets the repo name based on the origin.
+     *
+     * @param string $origin The repo origin.
+     *
+     */
     protected function setRepoNameFromOrigin($origin)
     {
         // if ssh, strip username off so  `parse_url` can work as expected

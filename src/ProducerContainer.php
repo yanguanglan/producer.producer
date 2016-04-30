@@ -209,17 +209,21 @@ class ProducerContainer
     }
 
     /**
-     * Is GitHub-based if hostname is `api.github.com` and the project remote
-     * contains `github.com`. Alternatively, the project is using GitHub Enterprise
-     * if hostname is NOT `api.github.com` and the configured hostname matches
-     * the project remote called `origin`.
      *
-     * @param $origin
-     * @param $config
+     * Is GitHub-based if hostname is `api.github.com` and the repo origin
+     * contains `github.com`.
+     *
+     * Alternatively, the project is using GitHub Enterprise if hostname is NOT
+     * `api.github.com` and the configured hostname matches the repo origin.
+     *
+     * @param $origin string The repo origin.
+     *
+     * @param $config Config A config object.
      *
      * @return bool
+     *
      */
-    private function isGithubBased($origin, Config $config)
+    protected function isGithubBased($origin, Config $config)
     {
         if ($config->get('github_hostname') === 'api.github.com') {
             return strpos($origin, 'github.com') !== false;
@@ -228,7 +232,22 @@ class ProducerContainer
         }
     }
 
-    private function isGitlabBased($origin, Config $config)
+    /**
+     *
+     * Is GitLab-based if hostname is `gitlab.com` and the repo origin contains
+     * `github.com`.
+     *
+     * Alternatively, the project is using self-hosted GitLab if hostname is NOT
+     * `gitlab.com` and the configured hostname matches the repo origin.
+     *
+     * @param $origin string The repo origin.
+     *
+     * @param $config Config A config object.
+     *
+     * @return bool
+     *
+     */
+    protected function isGitlabBased($origin, Config $config)
     {
         if ($config->get('gitlab_hostname') === 'gitlab.com') {
             return strpos($origin, 'gitlab.com') !== false;
@@ -237,7 +256,22 @@ class ProducerContainer
         }
     }
 
-    private function isBitbucketBased($origin, Config $config)
+    /**
+     *
+     * Is Bitbucket-based if hostname is `api.bitbucket.org` and the repo origin
+     * contains `bitbucket.org`.
+     *
+     * Alternatively, the project is using self-hosted Bitbucket if hostname is
+     * NOT `bitbucket.org` and the configured hostname matches the repo origin.
+     *
+     * @param $origin string The repo origin.
+     *
+     * @param $config Config A config object.
+     *
+     * @return bool
+     *
+     */
+    protected function isBitbucketBased($origin, Config $config)
     {
         if ($config->get('bitbucket_hostname') === 'api.bitbucket.org') {
             return strpos($origin, 'bitbucket.org') !== false;

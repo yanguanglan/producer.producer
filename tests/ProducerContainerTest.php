@@ -28,7 +28,7 @@ class ProducerContainerTest extends \PHPUnit_Framework_TestCase
 
         // $container->newApi($origin, $config) : ApiInterfaces
         $api = $newApi->invokeArgs($container, [$origin, $config]);
-        
+
         $this->assertInstanceOf(Github::class, $api);
         $this->assertEquals($repoName, $api->getRepoName());
     }
@@ -44,7 +44,7 @@ class ProducerContainerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockConfig($data)
+    protected function mockConfig($data)
     {
         $config = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()

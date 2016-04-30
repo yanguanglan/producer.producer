@@ -26,6 +26,8 @@ class Bitbucket extends AbstractApi
      *
      * @param string $origin The repository remote origin.
      *
+     * @param string $hostname The hostname of Bitbucket service.
+     *
      * @param string $user The API username.
      *
      * @param string $pass The API password.
@@ -37,6 +39,13 @@ class Bitbucket extends AbstractApi
         $this->setRepoNameFromOrigin($origin);
     }
 
+    /**
+     *
+     * Sets the repo name based on the origin.
+     *
+     * @param string $origin The repo origin.
+     *
+     */
     protected function setRepoNameFromOrigin($origin)
     {
         $repoName = parse_url($origin, PHP_URL_PATH);

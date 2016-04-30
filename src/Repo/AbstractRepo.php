@@ -174,7 +174,7 @@ abstract class AbstractRepo implements RepoInterface
 
     /**
      *
-     * Checks the various support files, *except* for CHANGES, since updating
+     * Checks all support files *except* for CHANGES; this is because updating
      * the changes should be the very last thing to deal with.
      *
      */
@@ -187,6 +187,13 @@ abstract class AbstractRepo implements RepoInterface
         }
     }
 
+    /**
+     *
+     * Checks one support file.
+     *
+     * @param string $file The file to check.
+     *
+     */
     protected function checkSupportFile($file)
     {
         if (! $this->fsio->isFile($file)) {
