@@ -1,11 +1,6 @@
-Second major release.
+- Add support for GitHub Enterprise, self-hosted GitLab, and Bitbucket Server
+via `*_hostname` config directives.
 
-- Supports package-level installation (in addition to global installation).
+- The CHANGES file is now checked for existence *last*, so that those without
+a CHANGES file can update it once at the very end of the validation process.
 
-- Supports package-specific configuration file at `.producer/config`, allowing you to specify the `@package` name in docblocks, the `phpunit` and `phpdoc` command paths, and the names of the various support files.
-
-- No longer installs `phpunit` and `phpdoc`; you will need to install them yourself, either globally or as part of your package.
-
-- Reorganized internals to split out HTTP interactions.
-
-- Updated instructions and tests.
