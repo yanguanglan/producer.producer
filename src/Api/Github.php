@@ -26,30 +26,38 @@ class Github extends AbstractApi
      *
      * @param string $origin The repository remote origin.
      *
-     * @param string $user The API username.
+     * @param string $hostname The hostname of GitHub service.
      *
-     * @param string $token The API secret token.
+     * @param string $user   The API username.
      *
+     * @param string $token  The API secret token.
      */
-    public function __construct($origin, $user, $token)
+    public function __construct($origin, $hostname, $user, $token)
     {
+        // @see https://developer.github.com/v3/enterprise
+        if (strpos($hostname, 'github.com') === false) {
+            $hostname .= '/api/v3';
+        }
+
         // set the HTTP object
-        $this->setHttp("https://{$user}:{$token}@api.github.com");
+        $this->setHttp("https://{$user}:{$token}@{$hostname}");
+        
+        $this->setRepoNameFromOrigin($origin);
+    }
+
+    private function setRepoNameFromOrigin($origin)
+    {
+        // If SSH, strip username off so that `parse_url`
+        // can work as expected
+        if (strpos($origin, 'git@') !== false) {
+            $origin = substr($origin, 4);
+        }
 
         // start by presuming HTTPS
         $repoName = parse_url($origin, PHP_URL_PATH);
 
-        // check for SSH
-        $ssh = 'git@github.com:';
-        $len = strlen($ssh);
-        if (substr($origin, 0, $len) == $ssh) {
-            $repoName = substr($origin, $len);
-        }
-
         // strip .git from the end
-        if (substr($repoName, -4) == '.git') {
-            $repoName = substr($repoName, 0, -4);
-        }
+        $repoName = preg_replace('/\.git$/', '', $repoName);
 
         // retain
         $this->repoName = trim($repoName, '/');

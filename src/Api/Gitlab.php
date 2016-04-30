@@ -31,33 +31,45 @@ class Gitlab extends AbstractApi
 
     /**
      *
+     * The configured hostname for Gitlab
+     *
+     * @var string
+     *
+     */
+    protected $hostname;
+
+    /**
+     *
      * Constructor.
      *
      * @param string $origin The repository remote origin.
      *
-     * @param string $token The API secret token.
-     *
+     * @param string $hostname
+     * @param string $token  The API secret token.
      */
-    public function __construct($origin, $token)
+    public function __construct($origin, $hostname, $token)
     {
         // set the HTTP object and token
-        $this->setHttp("https://gitlab.com/api/v3");
+        $this->setHttp("https://{$hostname}/api/v3");
         $this->token = $token;
+        $this->hostname = $hostname;
 
-        // presume HTTPS
+        $this->setRepoNameFromOrigin($origin);
+    }
+
+    private function setRepoNameFromOrigin($origin)
+    {
+        // If SSH, strip username off so that `parse_url`
+        // can work as expected
+        if (strpos($origin, 'git@') !== false) {
+            $origin = substr($origin, 4);
+        }
+
+        // start by presuming HTTPS
         $repoName = parse_url($origin, PHP_URL_PATH);
 
-        // check for SSH
-        $ssh = 'git@gitlab.com:';
-        $len = strlen($ssh);
-        if (substr($origin, 0, $len) == $ssh) {
-            $repoName = substr($origin, $len);
-        }
-
         // strip .git from the end
-        if (substr($repoName, -4) == '.git') {
-            $repoName = substr($repoName, 0, -4);
-        }
+        $repoName = preg_replace('/\.git$/', '', $repoName);
 
         // retain
         $this->repoName = trim($repoName, '/');
@@ -103,7 +115,7 @@ class Gitlab extends AbstractApi
             $issues[] = (object) [
                 'number' => $issue->iid,
                 'title' => $issue->title,
-                'url' => "https://gitlab.com/{$this->repoName}/issues/{$issue->iid}",
+                'url' => "https://{$this->hostname}/{$this->repoName}/issues/{$issue->iid}",
             ];
         }
 

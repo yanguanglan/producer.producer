@@ -179,16 +179,18 @@ class ProducerContainer
     {
         switch (true) {
 
-            case (strpos($origin, 'github.com') !== false):
+            case ($this->isGithubBased($origin, $config)):
                 return new Api\Github(
                     $origin,
+                    $config->get('github_hostname'),
                     $config->get('github_username'),
                     $config->get('github_token')
                 );
 
-            case (strpos($origin, 'gitlab.com') !== false):
+            case ($this->isGitlabBased($origin, $config)):
                 return new Api\Gitlab(
                     $origin,
+                    $config->get('gitlab_hostname'),
                     $config->get('gitlab_token')
                 );
 
@@ -202,6 +204,35 @@ class ProducerContainer
             default:
                 throw new Exception("Producer will not work with {$origin}.");
 
+        }
+    }
+
+    /**
+     * Is GitHub-based if hostname is `api.github.com` and the project remote
+     * contains `github.com`. Alternatively, the project is using GitHub Enterprise
+     * if hostname is NOT `api.github.com` and the configured hostname matches
+     * the project remote called `origin`.
+     *
+     * @param $origin
+     * @param $config
+     *
+     * @return bool
+     */
+    private function isGithubBased($origin, $config)
+    {
+        if ($config->get('github_hostname') === 'api.github.com') {
+            return strpos($origin, 'github.com') !== false;
+        } else {
+            return strpos($origin, $config->get('github_hostname')) !== false;
+        }
+    }
+
+    private function isGitlabBased($origin, $config)
+    {
+        if ($config->get('gitlab_hostname') === 'gitlab.com') {
+            return strpos($origin, 'gitlab.com') !== false;
+        } else {
+            return strpos($origin, $config->get('gitlab_hostname')) !== false;
         }
     }
 }

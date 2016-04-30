@@ -34,13 +34,90 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
+            'github_hostname' => 'api.github.com',
             'github_token' => null,
             'github_username' => null,
+            'gitlab_hostname' => 'gitlab.com',
             'gitlab_token' => 'foobarbazdibzimgir',
             'package' => '',
             'commands' => [
                 'phpdoc' => 'phpdoc',
                 'phpunit' => '/path/to/phpunit',
+            ],
+            'files' => [
+                'changes' => 'CHANGES.md',
+                'contributing' => 'CONTRIBUTING.md',
+                'license' => 'LICENSE.md',
+                'phpunit' => 'phpunit.xml.dist',
+                'readme' => 'README.md',
+            ],
+        ];
+
+        $actual = $config->getAll();
+
+        $this->assertSame($expect, $actual);
+    }
+
+    public function testGitHubHostOverride()
+    {
+        $homefs = $this->mockFsio([
+            'github_hostname' => 'example.org',
+            'github_username' => 'foo',
+            'github_token' => 'bar',
+        ]);
+        $repofs = $this->mockFsio([], false);
+
+        $config = new Config($homefs, $repofs);
+
+        $expect = [
+            'bitbucket_password' => null,
+            'bitbucket_username' => null,
+            'github_hostname' => 'example.org',
+            'github_token' => 'bar',
+            'github_username' => 'foo',
+            'gitlab_hostname' => 'gitlab.com',
+            'gitlab_token' => null,
+            'package' => '',
+            'commands' => [
+                'phpdoc' => 'phpdoc',
+                'phpunit' => 'phpunit',
+            ],
+            'files' => [
+                'changes' => 'CHANGES.md',
+                'contributing' => 'CONTRIBUTING.md',
+                'license' => 'LICENSE.md',
+                'phpunit' => 'phpunit.xml.dist',
+                'readme' => 'README.md',
+            ],
+        ];
+
+        $actual = $config->getAll();
+
+        $this->assertSame($expect, $actual);
+    }
+
+    public function testGitlabHostOverride()
+    {
+        $homefs = $this->mockFsio([
+            'gitlab_hostname' => 'example.org',
+            'gitlab_token' => 'bar',
+        ]);
+        $repofs = $this->mockFsio([], false);
+
+        $config = new Config($homefs, $repofs);
+
+        $expect = [
+            'bitbucket_password' => null,
+            'bitbucket_username' => null,
+            'github_hostname' => 'api.github.com',
+            'github_token' => null,
+            'github_username' => null,
+            'gitlab_hostname' => 'example.org',
+            'gitlab_token' => 'bar',
+            'package' => '',
+            'commands' => [
+                'phpdoc' => 'phpdoc',
+                'phpunit' => 'phpunit',
             ],
             'files' => [
                 'changes' => 'CHANGES.md',
@@ -74,8 +151,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $expect = [
             'bitbucket_password' => null,
             'bitbucket_username' => null,
+            'github_hostname' => 'api.github.com',
             'github_token' => null,
             'github_username' => null,
+            'gitlab_hostname' => 'gitlab.com',
             'gitlab_token' => 'foobarbazdibzimgir',
             'package' => 'Foo.Bar',
             'commands' => [
