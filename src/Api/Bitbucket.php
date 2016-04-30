@@ -31,16 +31,16 @@ class Bitbucket extends AbstractApi
      * @param string $pass The API password.
      *
      */
-    public function __construct($origin, $user, $pass)
+    public function __construct($origin, $hostname, $user, $pass)
     {
-        // set the HTTP object
-        $this->setHttp("https://{$user}:{$pass}@api.bitbucket.org/2.0");
+        $this->setHttp("https://{$user}:{$pass}@{$hostname}/2.0");
+        $this->setRepoNameFromOrigin($origin);
+    }
 
-        // set the repo name
+    protected function setRepoNameFromOrigin($origin)
+    {
         $repoName = parse_url($origin, PHP_URL_PATH);
-        if (substr($repoName, -4) == '.hg') {
-            $repoName = substr($repoName, 0, -3);
-        }
+        $repoName = preg_replace('/\.hg$/', '', $repoName);
         $this->repoName = trim($repoName, '/');
     }
 

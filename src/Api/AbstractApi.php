@@ -62,6 +62,19 @@ abstract class AbstractApi implements ApiInterface
         $this->http = new Http($base);
     }
 
+    protected function setRepoNameFromOrigin($origin)
+    {
+        // if ssh, strip username off so  `parse_url` can work as expected
+        if (strpos($origin, 'git@') !== false) {
+            $origin = substr($origin, 4);
+        }
+
+        // get path from url, strip .git from the end, and retain
+        $repoName = parse_url($origin, PHP_URL_PATH);
+        $repoName = preg_replace('/\.git$/', '', $repoName);
+        $this->repoName = trim($repoName, '/');
+    }
+
     /**
      *
      * Repeats an HTTP GET to get all results from all pages.
