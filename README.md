@@ -2,7 +2,8 @@
 
 Producer is a command-line quality-assurance tool to validate, and then release,
 your PHP library package. It supports Git and Mercurial for version control, as
-well as Github, Gitlab, and Bitbucket for remote origins.
+well as Github, Gitlab, and Bitbucket for remote origins (including self-hosted
+origins).
 
 ## Installing
 
@@ -46,8 +47,10 @@ mkdir ~/.producer
 echo "; Github
 github_username =
 github_token =
+
 ; Gitlab
 gitlab_token =
+
 ; Bitbucket
 bitbucket_username =
 bitbucket_password =" > ~/.producer/config
@@ -74,6 +77,11 @@ sets any of the following options for that specific package.
 ```ini
 ; custom @package docblock value
 package = Custom.Name
+
+; custom hostnames for self-hosted origins
+github_hostname = example.com
+gitlab_hostname = example.net
+bitbucket_hostname = example.org
 
 ; commands to use for phpunit and phpdoc
 [commands]
