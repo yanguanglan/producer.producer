@@ -25,11 +25,12 @@ class Config
      *
      */
     protected $data = [
-        'bitbucket_password' => null,
+        'bitbucket_hostname' => 'api.bitbucket.org',
         'bitbucket_username' => null,
+        'bitbucket_password' => null,
         'github_hostname' => 'api.github.com',
-        'github_token' => null,
         'github_username' => null,
+        'github_token' => null,
         'gitlab_hostname' => 'gitlab.com',
         'gitlab_token' => null,
         'package' => '',

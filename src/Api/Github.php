@@ -39,28 +39,8 @@ class Github extends AbstractApi
             $hostname .= '/api/v3';
         }
 
-        // set the HTTP object
         $this->setHttp("https://{$user}:{$token}@{$hostname}");
-        
         $this->setRepoNameFromOrigin($origin);
-    }
-
-    private function setRepoNameFromOrigin($origin)
-    {
-        // If SSH, strip username off so that `parse_url`
-        // can work as expected
-        if (strpos($origin, 'git@') !== false) {
-            $origin = substr($origin, 4);
-        }
-
-        // start by presuming HTTPS
-        $repoName = parse_url($origin, PHP_URL_PATH);
-
-        // strip .git from the end
-        $repoName = preg_replace('/\.git$/', '', $repoName);
-
-        // retain
-        $this->repoName = trim($repoName, '/');
     }
 
     /**

@@ -194,9 +194,10 @@ class ProducerContainer
                     $config->get('gitlab_token')
                 );
 
-            case (strpos($origin, 'bitbucket.org') !== false):
+            case ($this->isBitbucketBased($origin, $config) !== false):
                 return new Api\Bitbucket(
                     $origin,
+                    $config->get('bitbucket_hostname'),
                     $config->get('bitbucket_username'),
                     $config->get('bitbucket_password')
                 );
@@ -218,7 +219,7 @@ class ProducerContainer
      *
      * @return bool
      */
-    private function isGithubBased($origin, $config)
+    private function isGithubBased($origin, Config $config)
     {
         if ($config->get('github_hostname') === 'api.github.com') {
             return strpos($origin, 'github.com') !== false;
@@ -227,12 +228,21 @@ class ProducerContainer
         }
     }
 
-    private function isGitlabBased($origin, $config)
+    private function isGitlabBased($origin, Config $config)
     {
         if ($config->get('gitlab_hostname') === 'gitlab.com') {
             return strpos($origin, 'gitlab.com') !== false;
         } else {
             return strpos($origin, $config->get('gitlab_hostname')) !== false;
+        }
+    }
+
+    private function isBitbucketBased($origin, Config $config)
+    {
+        if ($config->get('bitbucket_hostname') === 'api.bitbucket.org') {
+            return strpos($origin, 'bitbucket.org') !== false;
+        } else {
+            return strpos($origin, $config->get('bitbucket_hostname')) !== false;
         }
     }
 }
