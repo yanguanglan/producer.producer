@@ -97,6 +97,11 @@ phpunit = phpunit.xml.dist
 readme = README.md
 ```
 
+> **Testing Systems**: If you want to use a testing system other than PHPUnit,
+> you can set `phpunit = /whatever/you/want`. As long as it exits non-zero when
+> the tests fail, Producer will work with it properly. Yes, it was short-sighted
+> to name the key `phpunit`; a future release of Producer may remedy that.
+
 ## Getting Started
 
 Now that you have Producer installed and configured, change to the directory
